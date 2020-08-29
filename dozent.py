@@ -33,20 +33,12 @@ class Dozent:
             connections = 2 * multiprocessing.cpu_count()
             os.system(f"aria2c -x {connections} {link}")
 
-        def get_start_index():
-            pass
-
-        def get_end_index():
-            pass
-
         with open('twitter-archivestream-links.json') as file:
             data = json.loads(file.read())
-            start_index = next((i for i, item in enumerate(data) if (
-                        int(item['month']) == self.start_date.month and int(item['year']) == self.start_date.year)),
-                               None)
-            end_index = next((i for i, item in enumerate(data) if
-                              (int(item['month']) == self.end_date.month and int(item['year']) == self.end_date.year)),
-                             None)
+
+            start_index = data.index(next(filter(lambda link: (int(link['month']) == self.start_date.month) and (int(link['year']) == self.start_date.year), data)))
+            end_index = data.index(next(filter(lambda link: (int(link['month']) == self.end_date.month) and (int(link['year']) == self.end_date.year), data)))
+
             for dict in data[start_index:end_index]:
                 link = dict['link']
                 print(f"Downloading all tweets from {dict['month']}-{dict['year']}")
