@@ -24,7 +24,7 @@ class Dozent:
             obj = SmartDL(link, '~/Downloads/')
             obj.start()
 
-        with open('links.json') as file:
+        with open('twitter-archivestream-links.json') as file:
             data = json.loads(file.read())
             start_index = next((i for i, item in enumerate(data) if (
                         int(item['month']) == self.start_date.month and int(item['year']) == self.start_date.year)),
@@ -33,8 +33,8 @@ class Dozent:
                               (int(item['month']) == self.end_date.month and int(item['year']) == self.end_date.year)),
                              None)
             for dict in data[start_index:end_index]:
-                link = dict.get('link')
-                print(f"Downloading all tweets from {dict.get('month')}-{dict.get('year')}")
+                link = dict['link']
+                print(f"Downloading all tweets from {dict['month']}-{dict['year']}")
                 download(link)
 
 
