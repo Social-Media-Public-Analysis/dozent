@@ -1,8 +1,9 @@
 import datetime
 import json
-
+import multiprocessing
 from pySmartDL import SmartDL
-
+import os
+import aria2p
 
 class Dozent:
     def __init__(self, start_date, end_date):
@@ -15,14 +16,28 @@ class Dozent:
         :return: None
         '''
 
-        def download(link):
+        def download_pysmart(link):
             '''
-            Downloads file from link
+            Downloads file from link using PySmartDL
             :param link:
             :return: None
             '''
             obj = SmartDL(link, '~/Downloads/')
             obj.start()
+
+        def download_axel(link):
+            connections = 2 * multiprocessing.cpu_count()
+            os.system(f"axel --verbose --alternate --num-connections={connections} {link}")
+
+        def download_aria2(link):
+            connections = 2 * multiprocessing.cpu_count()
+            os.system(f"aria2c -x {connections} {link}")
+
+        def get_start_index():
+            pass
+
+        def get_end_index():
+            pass
 
         with open('twitter-archivestream-links.json') as file:
             data = json.loads(file.read())
@@ -35,8 +50,8 @@ class Dozent:
             for dict in data[start_index:end_index]:
                 link = dict['link']
                 print(f"Downloading all tweets from {dict['month']}-{dict['year']}")
-                download(link)
+                download_pysmart(link)
 
 
-d = Dozent(datetime.datetime(2011, 9, 1), datetime.datetime(2017, 6, 1))
+d = Dozent(datetime.datetime(2011, 9, 1), datetime.datetime(2017, 7, 1))
 d.download_timeframe()
