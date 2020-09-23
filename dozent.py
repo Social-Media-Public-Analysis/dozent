@@ -6,9 +6,9 @@ from queue import Queue
 from threading import Thread
 
 try:
-    from DownloaderTools import DownloaderTools
+    from downloader_tools import DownloaderTools
 except ModuleNotFoundError:
-    from .DownloaderTools import DownloaderTools
+    from .downloader_tools import DownloaderTools
 
 
 class _DownloadWorker(Thread):
