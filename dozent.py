@@ -36,17 +36,19 @@ class Dozent:
     def download_timeframe(start_date: datetime.datetime,
                            end_date: datetime.datetime,
                            verbose: bool = True,
-                           download_dir: str = './~/Downloads'):
+                           download_dir: str = './data'):
         '''
         Download all tweet archives from start_date to end_date
         :param verbose: Show verbose output, defaults to True
-        :param download_dir: A relative path to the download directory, defaults to './~/Downloads'
+        :param download_dir: A relative path to the download directory, defaults to './data'
         '''
 
         if end_date > datetime.datetime(2017, 6, 1):
             ValueError(f'Specified end_date is out of range: {end_date} (>{datetime.datetime(2017, 6, 1)})')
 
-        with open('twitter-archivestream-links.json') as file:
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'twitter-archivestream-links.json')
+
+        with open(file_path) as file:
             data = json.loads(file.read())
 
         # Create a queue to communicate with the worker threads
