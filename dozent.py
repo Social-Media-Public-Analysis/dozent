@@ -33,12 +33,12 @@ class Dozent:
         self.end_date = end_date
 
     def download_timeframe(self):
-        '''
+        """
         Download all tweet archives from self.start_date to self.end_date
         :return: None
-        '''
+        """
 
-        with open('twitter-archivestream-links.json') as file:
+        with open('twitter-archive-stream-links.json') as file:
             data = json.loads(file.read())
 
         # Create a queue to communicate with the worker threads
