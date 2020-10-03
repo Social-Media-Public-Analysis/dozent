@@ -4,6 +4,7 @@ import multiprocessing
 import time
 from queue import Queue
 from threading import Thread
+import argparse
 
 try:
     from downloader_tools import DownloaderTools
@@ -70,14 +71,23 @@ class Dozent:
         queue.join()
 
 
-def format_inputs():
-    _start_time = time.time()
+def main(parser: argparse.ArgumentParser):
+    if parser.timeit:
+        _start_time = time.time()
     _dozent_object = Dozent(datetime.datetime(2011, 9, 1), datetime.datetime(2016, 10, 1))
     if _dozent_object.end_date > datetime.datetime(2017, 6, 1):
         RuntimeError('Not implemented')
     _dozent_object.download_timeframe()
-    print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
+    if parser.timeit:
+        print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
 
 
 if __name__ == "__main__":
-    print(text_renderer.renderText('Hello World'))
+    parser = argparse.ArgumentParser(description='A powerful downloader to get tweets from twitter for our compute. '
+                                                 'The first step of many')
+    parser.add_argument('-s', '--start-date', help="The date from where we download. The format must be: YYYY-MM-DD",
+                        required=True, type=datetime.date.fromisoformat)
+    parser.add_argument('-e', '--end-date', help="The last day that we download. The format must be: YYYY-MM-DD",
+                        required=True, type=datetime.date.fromisoformat)
+    parser.add_argument('-t', '--timeit', help='Show total program runtime', default=True)
+    main(parser)
