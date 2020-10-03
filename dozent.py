@@ -10,6 +10,11 @@ try:
 except ModuleNotFoundError:
     from .downloader_tools import DownloaderTools
 
+try:
+    from command_line_utils import text_renderer
+except ModuleNotFoundError:
+    from .command_line_utils import text_renderer
+
 
 class _DownloadWorker(Thread):
 
@@ -65,10 +70,14 @@ class Dozent:
         queue.join()
 
 
-if __name__ == "__main__":
+def format_inputs():
     _start_time = time.time()
     _dozent_object = Dozent(datetime.datetime(2011, 9, 1), datetime.datetime(2016, 10, 1))
     if _dozent_object.end_date > datetime.datetime(2017, 6, 1):
         RuntimeError('Not implemented')
     _dozent_object.download_timeframe()
     print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
+
+
+if __name__ == "__main__":
+    print(text_renderer.renderText('Hello World'))
