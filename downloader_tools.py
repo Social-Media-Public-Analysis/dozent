@@ -25,17 +25,18 @@ class DownloaderTools:
         eta = downloader_obj.get_eta(human=True)
 
         return f"\r {downloader_obj.url} [{status}] {num1} Mb / {num2} Mb @ {speed} {progress_bar} " \
-            f"[{progress_percentage}%, {eta} left]"
+               f"[{progress_percentage}%, {eta} left]"
 
     @classmethod
-    def download_pysmartdl(cls, link: str, verbose: bool = True):
+    def download_pysmartdl(cls, link: str, output_path: str = '../data/', verbose: bool = True):
         """
         Downloads file from link using PySmartDL
         :param link: link that needs to be downloaded
+        :param output_path: where the downloads need to happen. Default to the data directory
         :param verbose: Show verbose output
         :return: None
         """
-        downloader_obj = SmartDL(link, 'data/', progress_bar=False)
+        downloader_obj = SmartDL(link, output_path, progress_bar=False)
         downloader_obj.start(blocking=False)
         while not downloader_obj.isFinished():
             if verbose:
