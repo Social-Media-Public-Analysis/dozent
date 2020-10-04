@@ -7,6 +7,7 @@ from pySmartDL import SmartDL
 
 
 class DownloaderTools:
+    
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL, progress_bar_length: int = 20) -> str:
         """
