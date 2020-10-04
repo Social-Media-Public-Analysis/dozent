@@ -25,7 +25,7 @@ class DownloaderTools:
         progress_percentage = math.floor(100 * downloader_obj.get_progress())
         eta = downloader_obj.get_eta(human=True)
 
-        return f"\r {downloader_obj.url} [{status}] {num1} Mb / {num2} Mb @ {speed} {progress_bar} " \
+        return f"\r {downloader_obj.url} [{a}] {num1} Mb / {num2} Mb @ {speed} {progress_bar} " \
             f"[{progress_percentage}%, {eta} left]"
 
     @classmethod
