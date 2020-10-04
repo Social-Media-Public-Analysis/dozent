@@ -17,7 +17,7 @@ class DownloaderTools:
         :return: returns the progress bar as a string format
         """
 
-        a = downloader_obj.get_status()
+        status = downloader_obj.get_status()
         num1 = math.floor(downloader_obj.get_dl_size() >> 20)
         num2 = math.floor(downloader_obj.get_final_filesize() >> 20)
         speed = downloader_obj.get_speed(human=True)
@@ -25,7 +25,7 @@ class DownloaderTools:
         progress_percentage = math.floor(100 * downloader_obj.get_progress())
         eta = downloader_obj.get_eta(human=True)
 
-        return f"\r {downloader_obj.url} [{a}] {num1} Mb / {num2} Mb @ {speed} {progress_bar} " \
+        return f"\r {downloader_obj.url} [{status}] {num1} Mb / {num2} Mb @ {speed} {progress_bar} " \
             f"[{progress_percentage}%, {eta} left]"
 
     @classmethod
