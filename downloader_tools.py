@@ -17,7 +17,7 @@ class DownloaderTools:
         :return: returns the progress bar as a string format
         """
 
-        status = downloader_obj.get_status()
+        a = downloader_obj.get_status()
         num1 = math.floor(downloader_obj.get_dl_size() >> 20)
         num2 = math.floor(downloader_obj.get_final_filesize() >> 20)
         speed = downloader_obj.get_speed(human=True)
