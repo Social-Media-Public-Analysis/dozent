@@ -12,7 +12,7 @@ except ModuleNotFoundError:
 
 
 class DownloaderTools:
-    
+
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
         """Function to make progress bar

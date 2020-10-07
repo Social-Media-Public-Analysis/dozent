@@ -24,14 +24,28 @@ class ProgressTracker(threading.Thread):
         self.sum_progress = 0
         self.next_task = 0
 
+        self.terminal_size = None
+
+        resized = self.refresh_terminal_size()
+        assert(resized)  # This won't work if we couldn't read the terminal size
+
+        self.lock = threading.Lock()
+        self.tasks_pending = False
+        self.running = True
+
+    def refresh_terminal_size(self) -> bool:
+        """
+        Records any change in the terminal size.
+        :returns: True if a change is detected, else False
+        """
+
+        old_size = self.terminal_size
         try:
             self.terminal_size = os.get_terminal_size()[0]
         except OSError:
             self.terminal_size = shutil.get_terminal_size()[0]
 
-        self.lock = threading.Lock()
-        self.tasks_pending = False
-        self.running = True
+        return old_size != self.terminal_size
 
     def join(self):
         self.message_queue.join()
@@ -106,6 +120,12 @@ class ProgressTracker(threading.Thread):
         self.tasks[task_id] = task
 
         if draw:
+            # Redraw all bars if the terminal size changes
+            if refresh_terminal_size():
+                task_id = 0
+
+            # Return to start of the progress bar for task_id
+            self._delete_progress_bars(starting_id=task_id)
             self._draw_task_progress(task_id)
 
     def _draw_task_progress(self, task_id: int):
@@ -113,20 +133,6 @@ class ProgressTracker(threading.Thread):
 
         Assumes the console begins at the end of any previously drawn progress bars.
         """
-
-        # Redraw all bars if the terminal size changes
-
-        try:
-            terminal_size = os.get_terminal_size()[0]
-        except OSError:
-            terminal_size = shutil.get_terminal_size()[0]
-
-        if self.terminal_size != terminal_size:
-            self.terminal_size = terminal_size
-            task_id = 0
-
-        # Return to start of the progress bar for task_id
-        self._delete_progress_bars(starting_id=task_id)
 
         # We re-write the progress for all tasks, in order to finish at the end of all progress bars (our assumption)
         for task in [self.tasks[i] for i in range(task_id, len(self.tasks))]:

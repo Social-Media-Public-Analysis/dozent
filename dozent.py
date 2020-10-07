@@ -5,6 +5,7 @@ import os
 import time
 from queue import Queue
 from threading import Thread
+from typing import List
 
 try:
     from downloader_tools import DownloaderTools, ProgressTracker
@@ -33,6 +34,40 @@ class _DownloadWorker(Thread):
 class Dozent:
 
     @staticmethod
+    def get_archives_in_date_interval(start_date: datetime.datetime,
+                                      end_date: datetime.datetime, file_path: str = None) -> List[str]:
+        """
+        Parse out the download links for archives in a given date interval.
+
+        :param start_date: Beginning date of range to filter results.
+        :param end_date: End date of range to filter results.
+        :param file_path: The path to a json file containing the archive link data, defaults to None.
+                          If None is provided, "__file__/twitter-archive-stream-links.json" will be used
+
+        :return: The list of url links.
+
+        :raises ValueError: Raised when the end_date exceeds the maximum date of: June 1, 2017.
+        """
+
+        if end_date > datetime.datetime(2017, 6, 1):
+            raise ValueError(f'Specified end_date is out of range: {end_date} (>{datetime.datetime(2017, 6, 1)})')
+
+        if file_path is None:
+            file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'twitter-archive-stream-links.json')
+
+        with open(file_path) as file:
+            data = json.loads(file.read())
+
+        start_index = data.index(
+            next(filter(lambda link: (int(link['month']) == start_date.month) and
+                                     (int(link['year']) == start_date.year), data)))
+        end_index = data.index(
+            next(filter(lambda link: (int(link['month']) == end_date.month) and
+                                     (int(link['year']) == end_date.year), data)))
+
+        return [sample_date['link'] for sample_date in data[start_index:end_index]]
+
+    @staticmethod
     def download_timeframe(start_date: datetime.datetime,
                            end_date: datetime.datetime,
                            verbose: bool = True,
@@ -44,13 +79,7 @@ class Dozent:
         :return: None
         """
 
-        if end_date > datetime.datetime(2017, 6, 1):
-            ValueError(f'Specified end_date is out of range: {end_date} (>{datetime.datetime(2017, 6, 1)})')
-
-        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'twitter-archive-stream-links.json')
-
-        with open(file_path) as file:
-            data = json.loads(file.read())
+        links = get_archive_links_in_date_interval(start_date, end_date)
 
         # Create a queue to communicate with the worker threads
         queue = Queue()
@@ -69,16 +98,9 @@ class Dozent:
             worker.daemon = True
             worker.start()
 
-        start_index = data.index(
-            next(filter(lambda link: (int(link['month']) == start_date.month) and
-                                     (int(link['year']) == start_date.year), data)))
-        end_index = data.index(
-            next(filter(lambda link: (int(link['month']) == end_date.month) and
-                                     (int(link['year']) == end_date.year), data)))
-
         # Put the tasks into the queue
-        for sample_date in data[start_index:end_index]:
-            queue.put(sample_date['link'])
+        for link in links:
+            queue.put(link)
 
         queue.join()
         tracker.join()
