@@ -121,7 +121,7 @@ class ProgressTracker(threading.Thread):
 
         if draw:
             # Redraw all bars if the terminal size changes
-            if refresh_terminal_size():
+            if self.refresh_terminal_size():
                 task_id = 0
 
             # Return to start of the progress bar for task_id

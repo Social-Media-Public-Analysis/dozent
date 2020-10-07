@@ -79,7 +79,7 @@ class Dozent:
         :return: None
         """
 
-        links = get_archive_links_in_date_interval(start_date, end_date)
+        links = Dozent.get_archive_links_in_date_interval(start_date, end_date)
 
         # Create a queue to communicate with the worker threads
         queue = Queue()
