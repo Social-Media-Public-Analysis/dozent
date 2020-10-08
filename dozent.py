@@ -1,6 +1,7 @@
 import datetime
 import json
 import multiprocessing
+import os
 import time
 from queue import Queue
 from threading import Thread
@@ -15,9 +16,9 @@ TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / 'twitter-archive-
 LAST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
 
 try:
-    from downloader_tools import DownloaderTools
+    from downloader_tools import DownloaderTools, ProgressTracker
 except ModuleNotFoundError:
-    from .downloader_tools import DownloaderTools
+    from .downloader_tools import DownloaderTools, ProgressTracker
 
 try:
     from command_line_utils import text_renderer
@@ -27,25 +28,24 @@ except ModuleNotFoundError:
 
 class _DownloadWorker(Thread):
 
-    def __init__(self, queue: Queue):
+    def __init__(self, queue: Queue, download_dir: str, tracker: ProgressTracker = None):
         Thread.__init__(self)
-        self.verbosity = True
         self.queue = queue
+        self.download_dir = download_dir
+        self.tracker = tracker
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link, verbose=self.verbosity)
+                DownloaderTools.download_with_pysmartdl(link, self.download_dir, tracker=self.tracker)
             finally:
                 self.queue.task_done()
 
-    def set_verbosity(self, verbose: bool = True):
-        self.verbosity = verbose
-
 
 class Dozent:
+    # TODO: Move start_date and end_date as optional arguments
     def __init__(self, start_date: datetime.date, end_date: datetime.date):
         self.start_date: datetime.date = start_date
         self.end_date: datetime.date = end_date
@@ -81,7 +81,7 @@ class Dozent:
 
         return links
 
-    def download_timeframe(self, verbosity: bool = True):
+    def download_timeframe(self, verbose: bool = True, download_dir: str = './data'):
         """
         Download all tweet archives from self.start_date to self.end_date
         :return: None
@@ -89,10 +89,18 @@ class Dozent:
 
         # Create a queue to communicate with the worker threads
         queue = Queue()
+        if verbose:
+            tracker = ProgressTracker()
+            tracker.daemon = True
+            tracker.start()
+        else:
+            tracker = None
+
+        os.makedirs(download_dir, exist_ok=True)
 
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue)
-            worker.set_verbosity(verbose=verbosity)
+            worker = _DownloadWorker(queue, download_dir, tracker=tracker)
+            # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             worker.start()
@@ -102,6 +110,7 @@ class Dozent:
             queue.put(sample_date['link'])
 
         queue.join()
+        tracker.join()
 
 
 def main(command_line_arguments: Dict[str, Any]):
@@ -116,7 +125,7 @@ def main(command_line_arguments: Dict[str, Any]):
                      f'Link to our GitHub '
                      f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
 
-    _dozent_object.download_timeframe(verbosity=verbose)
+    _dozent_object.download_timeframe(verbose=verbose)
 
     if command_line_arguments['timeit']:
         print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
