@@ -29,7 +29,7 @@ class DownloaderTools:
                f"[{progress_percentage}%, {eta} left]"
 
     @classmethod
-    def download_pysmartdl(cls, link: str, output_path: str = '../data/', verbose: bool = True):
+    def download_with_pysmartdl(cls, link: str, output_path: str = '../data/', verbose: bool = True):
         """
         Downloads file from link using PySmartDL
         :param link: link that needs to be downloaded
@@ -45,7 +45,7 @@ class DownloaderTools:
             time.sleep(.25)
 
     @classmethod
-    def download_axel(cls, link: str):
+    def download_with_axel(cls, link: str):
         """
         Downloads file from link using axel
         :param link: link that needs to be downloaded
@@ -55,7 +55,7 @@ class DownloaderTools:
             f"axel --verbose --alternate --num-connections={cls._connections_count} {link}")
 
     @classmethod
-    def download_aria2(cls, link: str):
+    def download_with_aria2(cls, link: str):
         """
         Downloads file from link using aria2
         :param link: link that needs to be downloaded
@@ -66,9 +66,9 @@ class DownloaderTools:
     _connections_count = 2 * multiprocessing.cpu_count()
 
     _downloaders = {
-        'pySmartDL': download_pysmartdl.__func__,
-        'Axel': download_axel.__func__,
-        'aria2': download_aria2.__func__
+        'pySmartDL': download_with_pysmartdl.__func__,
+        'Axel': download_with_axel.__func__,
+        'aria2': download_with_aria2.__func__
     }
 
 
