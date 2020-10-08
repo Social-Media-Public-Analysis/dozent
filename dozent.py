@@ -6,8 +6,12 @@ from queue import Queue
 from threading import Thread
 import argparse
 from typing import List, Dict, Any
+from pathlib import Path
 
-DEFAULT_DIRECTORY = '../data/'
+CURRENT_FILE_PATH = Path(__file__)
+DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
+TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / 'twitter-archive-stream-links.json'
+
 LAST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
 
 try:
@@ -33,7 +37,7 @@ class _DownloadWorker(Thread):
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_pysmartdl(link, verbose=self.verbosity)
+                DownloaderTools.download_with_pysmartdl(link, verbose=self.verbosity)
             finally:
                 self.queue.task_done()
 
@@ -46,7 +50,7 @@ class Dozent:
         self.start_date: datetime.date = start_date
         self.end_date: datetime.date = end_date
 
-        with open('twitter-archive-stream-links.json') as file:
+        with open(TWITTER_ARCHIVE_STREAM_LINKS_PATH) as file:
             self.date_links: List[Dict[str, str]] = json.loads(file.read())
 
     @staticmethod
@@ -127,7 +131,8 @@ if __name__ == "__main__":
                         required=True, type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date())
     parser.add_argument('-t', '--timeit', help='Show total program runtime', default=True)
     parser.add_argument('-o', '--output-directory', help='Output Directory where the file will be stored. '
-                                                         'Defaults to the data/ directory', default=DEFAULT_DIRECTORY)
+                                                         'Defaults to the data/ directory',
+                        default=DEFAULT_DATA_DIRECTORY)
     parser.add_argument('-q', '--quiet', help='Turn off output (except for errors and warnings)', action='store_true')
     args = parser.parse_args()
     main(vars(args))
