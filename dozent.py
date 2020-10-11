@@ -20,13 +20,8 @@ try:
 except ModuleNotFoundError:
     from .downloader_tools import DownloaderTools, ProgressTracker
 
-try:
-    from command_line_utils import text_renderer
-except ModuleNotFoundError:
-    from .command_line_utils import text_renderer
 
-
-class _DownloadWorker(Thread):
+class _DownloadWorker(Thread):  # skip_tests
 
     def __init__(self, queue: Queue, download_dir: str, tracker: ProgressTracker = None):
         Thread.__init__(self)
@@ -113,7 +108,7 @@ class Dozent:
         tracker.join()
 
 
-def main(command_line_arguments: Dict[str, Any]):
+def main(command_line_arguments: Dict[str, Any]):  # skip_tests
     _start_time = time.time()
     verbose = not command_line_arguments['quiet']
     _dozent_object = Dozent(command_line_arguments['start_date'], command_line_arguments['end_date'])
