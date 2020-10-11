@@ -13,22 +13,18 @@ CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
 TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / 'twitter-archive-stream-links.json'
 
-LAST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
+FIRST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
+LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 try:
     from downloader_tools import DownloaderTools, ProgressTracker
 except ModuleNotFoundError:
     from .downloader_tools import DownloaderTools, ProgressTracker
 
-try:
-    from command_line_utils import text_renderer
-except ModuleNotFoundError:
-    from .command_line_utils import text_renderer
-
 
 class _DownloadWorker(Thread):
 
-    def __init__(self, queue: Queue, download_dir: str, tracker: ProgressTracker = None):
+    def __init__(self, queue: Queue, download_dir: Path, tracker: ProgressTracker = None):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
@@ -39,16 +35,14 @@ class _DownloadWorker(Thread):
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link, self.download_dir, tracker=self.tracker)
+                DownloaderTools.download_with_pysmartdl(link, str(self.download_dir), tracker=self.tracker)
             finally:
                 self.queue.task_done()
 
 
 class Dozent:
     # TODO: Move start_date and end_date as optional arguments
-    def __init__(self, start_date: datetime.date, end_date: datetime.date):
-        self.start_date: datetime.date = start_date
-        self.end_date: datetime.date = end_date
+    def __init__(self):
 
         with open(TWITTER_ARCHIVE_STREAM_LINKS_PATH) as file:
             self.date_links: List[Dict[str, str]] = json.loads(file.read())
@@ -67,21 +61,40 @@ class Dozent:
 
         return datetime.date(year=year, month=month, day=day)
 
-    def get_links_for_days(self) -> List:
+    def get_links_for_days(self, start_date: datetime.date, end_date: datetime.date) -> List:
         """
         Function to get the links for the given start and end days
         :return: date dictionaries that are within self.start_date and self.end_dates
         """
         links = []
 
+        if not FIRST_DAY_OF_SUPPORT >= start_date:
+            RuntimeError(f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
+                         f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
+                         f'\nWe\'re planning on adding support for it soon.'
+                         f'Need that data sooner? Add an issue to out GitHub repo and we\'ll '
+                         f'walk you through the process'
+                         f'Link to our GitHub '
+                         f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
+
+        elif not end_date <= end_date:
+            RuntimeError(f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
+                         f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
+                         f'\nWe\'re planning on adding support for it soon.'
+                         f'Need that data sooner? Add an issue to out GitHub repo and we\'ll '
+                         f'walk you through the process'
+                         f'Link to our GitHub '
+                         f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
+
         for date_link in self.date_links:
             date = Dozent._make_date_from_date_link(date_link)
-            if self.start_date <= date <= self.end_date:
+            if start_date <= date <= end_date:
                 links.append(date_link)
 
         return links
 
-    def download_timeframe(self, verbose: bool = True, download_dir: str = './data'):
+    def download_timeframe(self, start_date: datetime.date, end_date: datetime.date, verbose: bool = True,
+                           download_dir: Path = DEFAULT_DATA_DIRECTORY):
         """
         Download all tweet archives from self.start_date to self.end_date
         :return: None
@@ -105,7 +118,7 @@ class Dozent:
             worker.daemon = True
             worker.start()
 
-        for sample_date in self.get_links_for_days():
+        for sample_date in self.get_links_for_days(start_date=start_date, end_date=end_date):
             print(f"Queueing tweets download for {sample_date['month']}-{sample_date['year']}")
             queue.put(sample_date['link'])
 
@@ -116,16 +129,11 @@ class Dozent:
 def main(command_line_arguments: Dict[str, Any]):
     _start_time = time.time()
     verbose = not command_line_arguments['quiet']
-    _dozent_object = Dozent(command_line_arguments['start_date'], command_line_arguments['end_date'])
+    _dozent_object = Dozent()
 
-    if _dozent_object.end_date > LAST_DAY_OF_SUPPORT:
-        RuntimeError(f'We currently only support until {LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
-                     f'\nWe\'re planning on adding support for it soon.'
-                     f'Need that data sooner? Add an issue to out GitHub repo and we\'ll walk you through the process'
-                     f'Link to our GitHub '
-                     f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
-
-    _dozent_object.download_timeframe(verbose=verbose)
+    _dozent_object.download_timeframe(start_date=command_line_arguments['start_date'],
+                                      end_date=command_line_arguments['end_date'],
+                                      verbose=verbose)
 
     if command_line_arguments['timeit']:
         print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
