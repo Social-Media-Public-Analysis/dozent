@@ -8,10 +8,14 @@ from morpheus.data_loading import DataLoading
 
 
 class Preprocess:
+    __instance__ = None
     __output_formats = ['csv', 'json', 'parquet', 'sql']
 
     def __init__(self):
-        pass
+        if Preprocess.__instance__ is None:
+            Preprocess.__instance__ = self
+        else:
+            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
     def __untar_file(file_path: str, destination: str, verbose: bool):
