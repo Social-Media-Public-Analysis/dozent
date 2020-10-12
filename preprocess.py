@@ -2,6 +2,7 @@ import os
 import shutil
 import tarfile
 import zipfile
+import tqdm
 
 from morpheus.data_loading import DataLoading
 
@@ -13,11 +14,13 @@ class Preprocess:
         pass
 
     @staticmethod
-    def __untar_file(file_path: str, destination: str):
+    def __untar_file(file_path: str, destination: str, verbose: bool):
         """
         Untars a single tar file into target directory
         :return: None
         """
+        if verbose:
+            print(f"Extracting {file_path}")
         tar_file = tarfile.open(file_path)
         try:
             tar_file.extractall(destination)
@@ -26,11 +29,13 @@ class Preprocess:
         tar_file.close()
 
     @staticmethod
-    def __unzip_file(file_path: str, destination: str):
+    def __unzip_file(file_path: str, destination: str, verbose: bool):
         """
         Unzips a single zip file into target directory
         :return: None
         """
+        if verbose:
+            print(f"Extracting {file_path}")
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
             try:
                 zip_ref.extractall(destination)
@@ -59,11 +64,11 @@ class Preprocess:
             if file_extension == 'tar':
                 if verbose:
                     print(f"\nUntaring: {file}")
-                Preprocess.__untar_file(f"{directory_path}{file}", destination)
+                Preprocess.__untar_file(f"{directory_path}{file}", destination, verbose)
             elif file_extension == 'zip':
                 if verbose:
                     print(f"\nUnzipping: {file}")
-                Preprocess.__unzip_file(f"{directory_path}{file}", destination)
+                Preprocess.__unzip_file(f"{directory_path}{file}", destination, verbose)
             else:
                 raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
