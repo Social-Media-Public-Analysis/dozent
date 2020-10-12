@@ -1,8 +1,7 @@
 import os
 import tarfile
-import time
 import zipfile
-from datetime import timedelta
+
 from morpheus.data_loading import DataLoading
 
 
@@ -10,29 +9,33 @@ class Preprocess:
     _output_formats = ['csv', 'json', 'parquet', 'sql']
 
     def __init__(self):
-        os.chdir('..')
-        if os.path.isdir("raw"):
-            pass
-        else:
-            os.mkdir('raw')
+        pass
 
     @staticmethod
-    def _untar_file(file_path: str, dest: str):
+    def _untar_file(file_path: str, destination: str):
         """
         Untars a single tar file into target directory
         :return: None
         """
-        file_path = tarfile.open(file_path)
-        file_path.extract(dest)
+        tar_file = tarfile.open(file_path)
+        try:
+            tar_file.extractall(destination)
+        except:
+            tar_file.close()
+        tar_file.close()
 
     @staticmethod
-    def _unzip_file(file_path: str, dest: str):
+    def _unzip_file(file_path: str, destination: str):
         """
         Unzips a single zip file into target directory
         :return: None
         """
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            zip_ref.extractall(dest)
+            try:
+                zip_ref.extractall(destination)
+            except:
+                zip_ref.close()
+            zip_ref.close()
 
     @staticmethod
     def extract_directory(directory_path: str, destination: str, verbose: bool = True):
@@ -44,20 +47,24 @@ class Preprocess:
         :return: None
         """
 
+        if os.path.isdir(destination):
+            pass
+        else:
+            os.mkdir(destination)
+
         files = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
         for file in files:
-            file_extension = file.split('.')[:-1]
-
+            file_extension = file[-3:]
             if file_extension == 'tar':
                 if verbose:
                     print(f"\nUntaring: {file}")
-                Preprocess._untar_file(f"{directory_path}/{file}", destination)
+                Preprocess._untar_file(f"{directory_path}{file}", destination)
             elif file_extension == 'zip':
                 if verbose:
                     print(f"\nUnzipping: {file}")
-                Preprocess._unzip_file(f"{directory_path}/{file}", destination)
+                Preprocess._unzip_file(f"{directory_path}{file}", destination)
             else:
-                RuntimeError(f"File extension {file_extension} not recognized.")
+                raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
             print(f"\nSuccessfully extracted all files in {directory_path} to {destination}")
 
@@ -101,9 +108,3 @@ class Preprocess:
 
         else:
             raise ValueError(f'The given format: {output_format} is not recognized')
-
-
-if __name__ == "__main__":
-    _start_time = time.time()
-    Preprocess.extract_directory('dozent/data', 'preprocess/raw')
-    print(f"\nElasped Time: {timedelta(seconds=(time.time() - _start_time))}")
