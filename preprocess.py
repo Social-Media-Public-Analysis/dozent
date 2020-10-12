@@ -7,7 +7,7 @@ from morpheus.data_loading import DataLoading
 
 
 class Preprocess:
-    _output_formats = ['csv', 'json', 'parquet', 'sql']
+    __output_formats = ['csv', 'json', 'parquet', 'sql']
 
     def __init__(self):
         pass
@@ -89,8 +89,8 @@ class Preprocess:
         :return:
         """
 
-        if output_format not in Preprocess._output_formats:
-            raise ValueError(f'The given format: {output_format} is not in {Preprocess._output_formats}')
+        if output_format not in Preprocess.__output_formats:
+            raise ValueError(f'The given format: {output_format} is not in {Preprocess.__output_formats}')
 
         files_list = DataLoading.get_files_list(pathname=directory_path, suffix=suffix, recursive=recursive)
         data = DataLoading.get_twitter_data_from_file_list(file_lst=files_list)
