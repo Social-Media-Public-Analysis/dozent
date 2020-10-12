@@ -1,4 +1,5 @@
 import os
+import shutil
 import tarfile
 import zipfile
 
@@ -38,7 +39,7 @@ class Preprocess:
             zip_ref.close()
 
     @staticmethod
-    def extract_directory(directory_path: str, destination: str, verbose: bool = True):
+    def extract_directory(directory_path: str, destination: str, verbose: bool = True, delete_archive: bool = False):
         """
         Extracts all files in a directory into target directory
         :param directory_path: path of the directory
@@ -67,6 +68,9 @@ class Preprocess:
                 raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
             print(f"\nSuccessfully extracted all files in {directory_path} to {destination}")
+
+        if delete_archive:
+            shutil.rmtree(directory_path)
 
     @staticmethod
     def store_tweets_to_file_format(directory_path: str, destination: str, suffix: str = '*.json*',
