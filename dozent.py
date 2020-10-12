@@ -42,7 +42,9 @@ class _DownloadWorker(Thread):  # skip_tests
 
 class Dozent:
     # TODO: Move start_date and end_date as optional arguments
+    __shared_state = {}
     def __init__(self):
+        self.__dict__ = self.__shared_state
 
         with open(TWITTER_ARCHIVE_STREAM_LINKS_PATH) as file:
             self.date_links: List[Dict[str, str]] = json.loads(file.read())

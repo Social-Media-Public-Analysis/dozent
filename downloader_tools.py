@@ -12,6 +12,10 @@ except ModuleNotFoundError:
 
 
 class DownloaderTools:
+    __shared_state = {}
+
+    def __init__(self):
+        self.__dict__ = self.__shared_state
 
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
