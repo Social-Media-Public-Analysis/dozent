@@ -1,13 +1,13 @@
+import argparse
 import datetime
 import json
 import multiprocessing
 import os
 import time
+from pathlib import Path
 from queue import Queue
 from threading import Thread
-import argparse
 from typing import List, Dict, Any
-from pathlib import Path
 
 CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
@@ -42,12 +42,16 @@ class _DownloadWorker(Thread):  # skip_tests
 
 class Dozent:
     # TODO: Move start_date and end_date as optional arguments
-    __shared_state = {}
-    def __init__(self):
-        self.__dict__ = self.__shared_state
+    __instance__ = None
 
-        with open(TWITTER_ARCHIVE_STREAM_LINKS_PATH) as file:
-            self.date_links: List[Dict[str, str]] = json.loads(file.read())
+    def __init__(self):
+        if Dozent.__instance__ is None:
+            Dozent.__instance__ = self
+            with open(TWITTER_ARCHIVE_STREAM_LINKS_PATH) as file:
+                self.date_links: List[Dict[str, str]] = json.loads(file.read())
+
+        else:
+            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
     def _make_date_from_date_link(date_link: Dict[str, str]) -> datetime.date:

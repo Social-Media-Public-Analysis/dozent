@@ -1,9 +1,9 @@
 import multiprocessing
 import os
 import time
+from typing import Tuple
 
 from pySmartDL import SmartDL
-from typing import Tuple
 
 try:
     from progress_tracker import ProgressTracker
@@ -12,10 +12,14 @@ except ModuleNotFoundError:
 
 
 class DownloaderTools:
-    __shared_state = {}
+    __instance__ = None
 
     def __init__(self):
-        self.__dict__ = self.__shared_state
+        if DownloaderTools.__instance__ is None:
+            DownloaderTools.__instance__ = self
+
+        else:
+            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
