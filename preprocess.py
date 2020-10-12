@@ -13,7 +13,7 @@ class Preprocess:
         pass
 
     @staticmethod
-    def _untar_file(file_path: str, destination: str):
+    def __untar_file(file_path: str, destination: str):
         """
         Untars a single tar file into target directory
         :return: None
@@ -26,7 +26,7 @@ class Preprocess:
         tar_file.close()
 
     @staticmethod
-    def _unzip_file(file_path: str, destination: str):
+    def __unzip_file(file_path: str, destination: str):
         """
         Unzips a single zip file into target directory
         :return: None
@@ -59,11 +59,11 @@ class Preprocess:
             if file_extension == 'tar':
                 if verbose:
                     print(f"\nUntaring: {file}")
-                Preprocess._untar_file(f"{directory_path}{file}", destination)
+                Preprocess.__untar_file(f"{directory_path}{file}", destination)
             elif file_extension == 'zip':
                 if verbose:
                     print(f"\nUnzipping: {file}")
-                Preprocess._unzip_file(f"{directory_path}{file}", destination)
+                Preprocess.__unzip_file(f"{directory_path}{file}", destination)
             else:
                 raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
