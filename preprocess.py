@@ -55,15 +55,14 @@ class Preprocess:
                           delete_archive: bool = False):
         """
         Extracts all files in a directory into target directory
+        :param delete_archive:
         :param directory_path: path of the directory
         :param destination: where the files will be stored
         :param verbose: show output?
         :return: None
         """
 
-        if os.path.isdir(destination):
-            pass
-        else:
+        if not os.path.isdir(destination):
             os.mkdir(destination)
 
         files = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
@@ -72,11 +71,11 @@ class Preprocess:
             if file_extension == 'tar':
                 if verbose:
                     print(f"\nUntaring: {file}")
-                Preprocess.__untar_file(f"{directory_path}{file}", destination, verbose)
+                Preprocess.__untar_file(f"{directory_path}/{file}", destination, verbose)
             elif file_extension == 'zip':
                 if verbose:
                     print(f"\nUnzipping: {file}")
-                Preprocess.__unzip_file(f"{directory_path}{file}", destination, verbose)
+                Preprocess.__unzip_file(f"{directory_path}/{file}", destination, verbose)
             else:
                 raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
