@@ -10,9 +10,9 @@ from typing import Union, List
 
 class Preprocess:
     __instance__ = None
-    __output_formats = ['csv', 'json', 'parquet', 'sql']
-    __supported_formats = ['csv', 'json']
-    __unsupported_formats = ['parquet', 'sql']
+    _output_formats = ['csv', 'json', 'parquet', 'sql']
+    _supported_formats = ['csv', 'json']
+    _unsupported_formats = ['parquet', 'sql']
 
     def __init__(self):
         if Preprocess.__instance__ is None:
@@ -103,8 +103,8 @@ class Preprocess:
                               only ['csv', 'json']
         :return: returns the list of all of the output files
         """
-        if output_format not in Preprocess.__supported_formats:
-            raise ValueError(f'The given format: {output_format} is not in {Preprocess.__supported_formats}')
+        if output_format not in Preprocess._supported_formats:
+            raise ValueError(f'The given format: {output_format} is not in {Preprocess._supported_formats}')
 
         files_list = DataLoading.get_files_list(pathname=directory_path, suffix=suffix, recursive=recursive)
         data = DataLoading.get_twitter_data_from_file_list(file_lst=files_list, remove_deleted_tweets=True)
