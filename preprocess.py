@@ -1,45 +1,58 @@
 import os
+import shutil
 import tarfile
-import time
 import zipfile
-from datetime import timedelta
+
 from morpheus.data_loading import DataLoading
 from pathlib import Path
 from typing import Union, List
 
 
 class Preprocess:
-    _output_formats = ['csv', 'json', 'parquet', 'sql']
-    _supported_formats = ['csv', 'json']
-    _unsupported_formats = ['parquet', 'sql']
+    __instance__ = None
+    __output_formats = ['csv', 'json', 'parquet', 'sql']
+    __supported_formats = ['csv', 'json']
+    __unsupported_formats = ['parquet', 'sql']
 
     def __init__(self):
-        os.chdir('..')
-        if os.path.isdir("raw"):
-            pass
+        if Preprocess.__instance__ is None:
+            Preprocess.__instance__ = self
         else:
-            os.mkdir('raw')
+            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
-    def _untar_file(file_path: Union[str, Path], destination: Union[str, Path]):
+    def __untar_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool):
         """
         Untars a single tar file into target directory
         :return: None
         """
-        file_path = tarfile.open(file_path)
-        file_path.extract(destination)
+        if verbose:
+            print(f"Extracting {file_path}")
+        tar_file = tarfile.open(file_path)
+        try:
+            tar_file.extractall(destination)
+        except:
+            tar_file.close()
+        tar_file.close()
 
     @staticmethod
-    def _unzip_file(file_path: Union[str, Path], destination: Union[str, Path]):
+    def __unzip_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool):
         """
         Unzips a single zip file into target directory
         :return: None
         """
+        if verbose:
+            print(f"Extracting {file_path}")
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            zip_ref.extractall(destination)
+            try:
+                zip_ref.extractall(destination)
+            except:
+                zip_ref.close()
+            zip_ref.close()
 
     @staticmethod
-    def extract_directory(directory_path: Union[str, Path], destination: Union[str, Path], verbose: bool = True):
+    def extract_directory(directory_path: Union[str, Path], destination: Union[str, Path], verbose: bool = True,
+                          delete_archive: bool = False):
         """
         Extracts all files in a directory into target directory
         :param directory_path: path of the directory
@@ -48,22 +61,29 @@ class Preprocess:
         :return: None
         """
 
+        if os.path.isdir(destination):
+            pass
+        else:
+            os.mkdir(destination)
+
         files = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
         for file in files:
-            file_extension = file.split('.')[:-1]
-
+            file_extension = file[-3:]
             if file_extension == 'tar':
                 if verbose:
                     print(f"\nUntaring: {file}")
-                Preprocess._untar_file(f"{directory_path}/{file}", destination)
+                Preprocess.__untar_file(f"{directory_path}{file}", destination, verbose)
             elif file_extension == 'zip':
                 if verbose:
                     print(f"\nUnzipping: {file}")
-                Preprocess._unzip_file(f"{directory_path}/{file}", destination)
+                Preprocess.__unzip_file(f"{directory_path}{file}", destination, verbose)
             else:
-                RuntimeError(f"File extension {file_extension} not recognized.")
+                raise RuntimeError(f"File extension .{file_extension} not recognized.")
         if verbose:
             print(f"\nSuccessfully extracted all files in {directory_path} to {destination}")
+
+        if delete_archive:
+            shutil.rmtree(directory_path)
 
     @staticmethod
     def store_tweets_to_file_format(directory_path: Union[str, Path], destination: Union[str, Path],
@@ -83,8 +103,8 @@ class Preprocess:
                               only ['csv', 'json']
         :return: returns the list of all of the output files
         """
-        if output_format not in Preprocess._supported_formats:
-            raise ValueError(f'The given format: {output_format} is not in {Preprocess._supported_formats}')
+        if output_format not in Preprocess.__supported_formats:
+            raise ValueError(f'The given format: {output_format} is not in {Preprocess.__supported_formats}')
 
         files_list = DataLoading.get_files_list(pathname=directory_path, suffix=suffix, recursive=recursive)
         data = DataLoading.get_twitter_data_from_file_list(file_lst=files_list, remove_deleted_tweets=True)
