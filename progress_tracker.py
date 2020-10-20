@@ -19,7 +19,7 @@ class ProgressTracker(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
-        self.tasks: Dict(int, Task) = {}
+        self.tasks: Dict[int, Task] = {}
         self.message_queue = queue.Queue()
         self.sum_progress = 0
         self.next_task = 0
