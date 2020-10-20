@@ -58,7 +58,8 @@ class DownloaderTools:
 
     @classmethod
     def download_with_pysmartdl(cls, link: str, download_dir: str, tracker: ProgressTracker = None):
-        """Downloads file from link using PySmartDL
+        """
+        Downloads file from link using PySmartDL
 
         :param link: link that needs to be downloaded
         :param download_dir: A relative path to the download directory
@@ -79,7 +80,7 @@ class DownloaderTools:
             time.sleep(.25)
 
     @classmethod
-    def download_with_axel(cls, link: str):
+    def download_with_axel(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated
         """Downloads file from link using axel
 
         :param link: link that needs to be downloaded
@@ -88,7 +89,7 @@ class DownloaderTools:
         os.system(f"axel --verbose --alternate --num-connections={cls._connections_count} {link}")
 
     @classmethod
-    def download_with_aria2(cls, link: str):
+    def download_with_aria2(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated
         """
         Downloads file from link using aria2
         :param link: link that needs to be downloaded
