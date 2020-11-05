@@ -21,7 +21,7 @@ class Preprocess:
             raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
-    def __untar_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool):
+    def __untar_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool): # skip_tests
         """
         Untars a single tar file into target directory
         :return: None
@@ -36,7 +36,7 @@ class Preprocess:
         tar_file.close()
 
     @staticmethod
-    def __unzip_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool):
+    def __unzip_file(file_path: Union[str, Path], destination: Union[str, Path], verbose: bool): # skip_tests
         """
         Unzips a single zip file into target directory
         :return: None
