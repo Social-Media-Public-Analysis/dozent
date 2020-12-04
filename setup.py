@@ -2,9 +2,11 @@ from distutils.core import setup
 setup(
   name = 'dozent',
   packages = ['dozent'],
-  version = '0.1',
+  version = '0.2',
   license='MIT',
   description = 'Dozent is a powerful downloader that is used to download a ton of twitter data from the internet archive.',
+  long_description='README.md',
+  long_description_content_type="text/markdown",
   author = 'Ali Abbas, Eric Burt, Keelin Becker-Wheeler',
   author_email = 'eric.burt@protonmail.com',
   url = 'https://github.com/Social-Media-Public-Analysis/dozent',
