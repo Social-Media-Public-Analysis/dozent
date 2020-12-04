@@ -1,0 +1,5 @@
+pySmartDL
+aria2p
+pytest
+pyfiglet
+smpamorpheus
