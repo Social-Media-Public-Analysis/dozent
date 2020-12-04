@@ -6,7 +6,7 @@ from typing import Tuple
 from pySmartDL import SmartDL
 
 try:
-    from progress_tracker import ProgressTracker
+    from dozent.progress_tracker import ProgressTracker
 except ModuleNotFoundError:
     from .progress_tracker import ProgressTracker
 
