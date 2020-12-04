@@ -8,7 +8,7 @@ setup(
   author = 'Ali Abbas, Eric Burt, Keelin Becker-Wheeler',
   author_email = 'eric.burt@protonmail.com',
   url = 'https://github.com/Social-Media-Public-Analysis/dozent',
-  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/archive/v_01.tar.gz',
+  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/archive/v_02.tar.gz',
   keywords = ['TWITTER', 'SCRAPER', 'DOWNLOAD'],
   install_requires=[
             'pySmartDL',
