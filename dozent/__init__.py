@@ -1,4 +1,4 @@
-from dozent.main import Dozent
+from dozent.dozent import Dozent
 
 from dozent.catch_thread_exceptions import install as _catch_thread_exceptions
 from dozent.preprocess import Preprocess

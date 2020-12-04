@@ -2,7 +2,7 @@ from setuptools import setup
 setup(
   name = 'dozent',
   packages = ['dozent'],
-  version = '0.4',
+  version = '0.5',
   license='MIT',
   description = 'Dozent is a powerful downloader that is used to download a ton of twitter data from the internet archive.',
   long_description='README.md',
@@ -10,14 +10,14 @@ setup(
   author = 'Ali Abbas, Eric Burt, Keelin Becker-Wheeler',
   author_email = 'eric.burt@protonmail.com',
   url = 'https://github.com/Social-Media-Public-Analysis/dozent',
-  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/archive/v_04.tar.gz',
+  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/archive/v_05.tar.gz',
   keywords = ['TWITTER', 'SCRAPER', 'DOWNLOAD'],
   install_requires=[
             'pySmartDL',
             'aria2p',
             'pytest',
             'pyfiglet',
-            'smpamorpheus',
+            'murpheus',
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',

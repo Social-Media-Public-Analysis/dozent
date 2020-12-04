@@ -1,6 +1,6 @@
 import unittest
-from dozent.main import Dozent
-from dozent import main
+from dozent.dozent import Dozent
+from dozent import dozent
 from datetime import date
 
 
@@ -9,8 +9,8 @@ class DozentTestCase(unittest.TestCase):
         pass
 
     def test_days_of_support_defined(self):
-        self.assertTrue(type(main.FIRST_DAY_OF_SUPPORT) == date)
-        self.assertTrue(type(main.LAST_DAY_OF_SUPPORT) == date)
+        self.assertTrue(type(dozent.FIRST_DAY_OF_SUPPORT) == date)
+        self.assertTrue(type(dozent.LAST_DAY_OF_SUPPORT) == date)
 
     def test_dozent_get_date_links(self):
         """
@@ -18,8 +18,8 @@ class DozentTestCase(unittest.TestCase):
         :return:
         """
         dozent_obj = Dozent()
-        len_of_links = len(dozent_obj.get_links_for_days(start_date=main.FIRST_DAY_OF_SUPPORT,
-                                                         end_date=main.LAST_DAY_OF_SUPPORT))
+        len_of_links = len(dozent_obj.get_links_for_days(start_date=dozent.FIRST_DAY_OF_SUPPORT,
+                                                         end_date=dozent.LAST_DAY_OF_SUPPORT))
         self.assertTrue(len_of_links >= 12 * (2017 - 2020))
 
     def test_make_date_from_date_link_day_when_is_defined(self):
