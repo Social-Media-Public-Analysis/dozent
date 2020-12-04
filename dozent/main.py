@@ -9,18 +9,15 @@ from queue import Queue
 from threading import Thread
 from typing import List, Dict, Any
 
+from dozent.downloader_tools import DownloaderTools
+from dozent.progress_tracker import ProgressTracker
+
 CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
 TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / 'twitter-archive-stream-links.json'
 
 FIRST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
 LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
-
-try:
-    from downloader_tools import DownloaderTools, ProgressTracker
-except ModuleNotFoundError:
-    from .downloader_tools import DownloaderTools, ProgressTracker
-
 
 class _DownloadWorker(Thread):  # skip_tests
 

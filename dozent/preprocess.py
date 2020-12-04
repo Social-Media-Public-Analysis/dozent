@@ -3,7 +3,7 @@ import shutil
 import tarfile
 import zipfile
 
-from morpheus.data_loading import DataLoading
+from smpamorpheus.data_loading import DataLoading
 from pathlib import Path
 from typing import Union, List
 
