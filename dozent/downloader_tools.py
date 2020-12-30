@@ -6,10 +6,9 @@ from typing import Tuple
 from pySmartDL import SmartDL
 
 try:
-    from dozent.progress_tracker import ProgressTracker
-except ModuleNotFoundError:
     from .progress_tracker import ProgressTracker
-
+except ImportError:
+    from progress_tracker import ProgressTracker
 
 class DownloaderTools:
     __instance__ = None

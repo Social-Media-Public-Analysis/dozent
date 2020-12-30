@@ -9,8 +9,12 @@ from queue import Queue
 from threading import Thread
 from typing import List, Dict, Any
 
-from dozent.downloader_tools import DownloaderTools
-from dozent.progress_tracker import ProgressTracker
+try:
+    from dozent.downloader_tools import DownloaderTools
+    from dozent.progress_tracker import ProgressTracker
+except ModuleNotFoundError:
+    from downloader_tools import DownloaderTools
+    from progress_tracker import ProgressTracker
 
 CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
