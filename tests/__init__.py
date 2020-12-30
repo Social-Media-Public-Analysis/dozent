@@ -9,7 +9,7 @@ CURRENT_FILE_PATH = Path(__file__)
 class CommonTestSetup:
     @staticmethod
     def set_data_dir_path() -> Tuple[Path, Path]:
-        data_path = CURRENT_FILE_PATH.parent.parent / f'data/test_data'
+        data_path = CURRENT_FILE_PATH.parent.parent / f'tests/test_data'
         path_prefix = CURRENT_FILE_PATH.parent.parent
         return data_path, path_prefix
 
