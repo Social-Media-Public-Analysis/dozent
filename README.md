@@ -15,7 +15,7 @@ To get started, just follow the `Getting Started` part of our main ReadMe (Linke
 Here's the `help` from the dozent:
 
 ```bash
-$ python dozent.py --help
+$ python dozent/dozent.py --help
 
 usage: dozent.py [-h] -s START_DATE -e END_DATE [-t TIMEIT]
                  [-o OUTPUT_DIRECTORY] [-q]
@@ -47,7 +47,7 @@ Here's an example of how the project works:
 The general workflow that we envision is that the user downloads the files for the days that they're interested in, preprocessing for the specifics that you'll looking for, and running more complex algorithms on top of that. 
 
 ```bash
-$ python dozent.py -s 2020-05-12 -e 2020-05-15
+$ python dozent/dozent.py -s 2020-05-12 -e 2020-05-15
 
 Queueing tweets download for 05-2020
 Queueing tweets download for 05-2020
