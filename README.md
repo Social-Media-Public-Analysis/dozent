@@ -1,6 +1,6 @@
 # Dozent
 
-Dozent is a powerful downloader that is used to download a ton of twitter data from the internet archive.
+Dozent is a powerful Twitter Scraper that is used to collect large amounts of Twitter data from the internet archive.
 
 It is built on top of [PySmartDL](https://pypi.org/project/pySmartDL/) and multithreading, similar to how traditional download accelerators like [axel](https://linux.die.net/man/1/axel), [aria2c](https://linux.die.net/man/1/aria2c) and [aws s3](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3-commands.html) work, ensuring that the biggest bottlenecks are your network and your hardware.
 
