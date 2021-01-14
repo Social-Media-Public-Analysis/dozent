@@ -10,12 +10,12 @@ setup(
   name = 'dozent',
   packages = ['dozent'],
   version = '0.7',
-  license='MIT',
+  license='GNU-3',
   description = 'Dozent is a powerful downloader that is used to download a ton of twitter data from the internet archive.',
   long_description=long_description,
   long_description_content_type='text/markdown',
   author = 'Ali Abbas, Eric Burt, Keelin Becker-Wheeler',
-  author_email = 'eric.burt@protonmail.com',
+  author_email = 'socialmediapublicanalysis@gmail.com',
   url = 'https://github.com/Social-Media-Public-Analysis/dozent',
   package_data={
         '': ['*.json'],
@@ -26,8 +26,7 @@ setup(
             'pySmartDL',
             'aria2p',
             'pytest',
-            'pyfiglet',
-            'murpheus',
+            'pyfiglet'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
