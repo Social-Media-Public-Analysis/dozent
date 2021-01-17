@@ -8,15 +8,27 @@ The data that is downloaded is already heavily compressed to reduce download tim
 
 If you have any ideas on how to improve Dozent, please open an issue [here](https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues) and tell us how!
 
-## Getting Started
+## Installation
 
-To get started, just follow the `Getting Started` part of our main ReadMe (Linked [here](https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/blob/master/README.md#getting-started)) 
+Before installing, ensure that the version of python that you're using is python>=3.6. We intend to support all of the latest releases of as they come out
+
+### Installing with pip
+
+Installing with pip is as easy as:
+
+```bash
+pip install dozent
+```
+
+### Installing with Docker
+
+In keeping with our goal for keeping everything we distribute as lightweight as possible, we include a docker image that would ensure that this process is as painless as possible without having to worry about python versions and so on.
+
+While "installing" isn't something that we can do with docker, we felt it best to include a some helpful links to help new comers install docker. 
+
+You can find the link to the installation [here](https://docs.docker.com/get-docker/). If you chose to go this route, we suggest jumping down to the `Run Dozent as a Docker Container` section after installing docker. 
 
 ## Usage
-
-Please ensure that Dozent is ran with a Python version greater or equal to 3.6 as any versions lower than 3.6 are incompatible.
-
-Here's the `help` command:
 
 ```bash
 $ python -m dozent --help
@@ -44,13 +56,9 @@ optional arguments:
 
 ```
 
-## Example
+### Downloading with Dozent after installing with pip
 
-Here's an example of how the project works:
-
-The general workflow that we envision is that the user downloads the files for the days that they're interested in, preprocessing for the specifics that you'll looking for, and running more complex algorithms on top of that. 
-
-Here is the command for downloading all tweets from March 12th, 2020 to March 15th, 2020. Please be sure to use a Python version greater or equal to 3.6
+Downloading all tweets from 12th of May 2020 to 15th of May 2020
 
 ```bash
 $ python -m dozent -s 2020-05-12 -e 2020-05-15
@@ -61,7 +69,8 @@ Queueing tweets download for 05-2020
 Queueing tweets download for 05-2020
 https://archive.org/download/archiveteam-twitter-stream-2020-05/twitter_stream_2020_05_13.tar [downloading] 16 Mb / 2498 Mb @ 1.6 MB/s [------------------] [0%, 32 minutes, 31 seconds left]
 ```
-## Run Dozent as a Docker Container
+
+### Downloading with Dozent after installing Docker
 
 Pull the latest Dozent image from Docker Hub
 ```bash
