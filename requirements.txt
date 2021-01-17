@@ -2,4 +2,3 @@ pySmartDL
 aria2p
 pytest
 pyfiglet
-murpheus==0.6
