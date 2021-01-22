@@ -13,4 +13,4 @@ jobs:
         uses: jpetrucciani/black-check@20.8b1
         with:
           # File or directory to run black on
-          path: /dozent
+          path: ./dozent
