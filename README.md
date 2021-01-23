@@ -88,5 +88,5 @@ $ docker run -it socialmediapublicanalysis/dozent:latest -h
 
 Download all tweets from March 12th, 2020 to March 15th, 2020
 ```bash
-$ docker run -it socialmediapublicanalysis/dozent:latest python3.6 -m dozent -s 2020-05-12 -e 2020-05-15
+$ docker run -it socialmediapublicanalysis/dozent:latest python -m dozent -s 2020-05-12 -e 2020-05-15
 ```

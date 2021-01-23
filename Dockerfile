@@ -14,11 +14,11 @@ COPY ./requirements.txt ./
 RUN set -ex \
     && apt-get update -yqq \
     && apt-get upgrade -yqq \
-    && python3.6 -m venv dozent-env \
-    && python3.6 -m pip install -r requirements.txt
+    && python -m venv dozent-env \
+    && python -m pip install -r requirements.txt
 
 # Copy the rest of the files
 COPY ./ ./
 
 # Default command
-CMD python3.6 -m dozent --help
+CMD python -m dozent --help
