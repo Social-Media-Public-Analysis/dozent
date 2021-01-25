@@ -13,7 +13,7 @@ CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / "data"
 
 
-def main(command_line_arguments: Dict[str, Any]):  # skip_tests
+def main(command_line_arguments: Dict[str, Any]): # skip_tests
     _start_time = time.time()
     verbose = not command_line_arguments["quiet"]
     _dozent_object = Dozent()
