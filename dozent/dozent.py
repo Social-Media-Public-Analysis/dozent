@@ -130,3 +130,40 @@ class Dozent:
         queue.join()
         tracker.join()
 
+    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY):
+        """
+        Downloads four small test files from S3 for testing purposes
+        """
+
+        # Create a queue to communicate with the worker threads
+        queue = Queue()
+        if verbose:
+            tracker = ProgressTracker()
+            tracker.daemon = True
+            tracker.start()
+        else:
+            tracker = None
+
+        os.makedirs(download_dir, exist_ok=True)
+
+        for x in range(multiprocessing.cpu_count()):
+            worker = _DownloadWorker(queue, download_dir, tracker=tracker)
+            # worker.set_verbosity(verbose=verbosity)
+            # Setting daemon to True will let the main thread exit even though the workers are blocking
+            worker.daemon = True
+            worker.start()
+
+        # Stores download links for sample data
+        test_download_links = [
+            "https://dozent-tests.s3.amazonaws.com/test_500K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_550K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_600K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
+        ]
+
+        for link in test_download_links:
+            print("Queueing Link")
+            queue.put(link)
+
+        queue.join()
+        tracker.join()

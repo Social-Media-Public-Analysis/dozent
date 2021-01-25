@@ -31,7 +31,12 @@ def main(command_line_arguments: Dict[str, Any]):  # skip_tests
             )
 
     elif command_line_arguments["test"]:
-        #_dozent_object.download_test()
+        _dozent_object.download_test()
+
+        if command_line_arguments["timeit"]:
+            print(
+                f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
+            )
 
     else:
         parser.print_help()
