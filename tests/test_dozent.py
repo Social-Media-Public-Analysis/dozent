@@ -57,7 +57,9 @@ class DozentTestCase(unittest.TestCase):
 
         _, _, filenames = next(walk('test_downloader_dir'))
 
-        self.assertEqual(filenames, ['test_500K.txt', 'test_650K.txt', 'test_600K.txt', 'test_550K.txt'])
+        filenames = set(filenames)
+
+        self.assertEqual(filenames, {'test_500K.txt', 'test_650K.txt', 'test_600K.txt', 'test_550K.txt'})
 
 if __name__ == "__main__":
     unittest.main()
