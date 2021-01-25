@@ -99,7 +99,7 @@ class Dozent:
         return links
 
     def download_timeframe(self, start_date: datetime.date, end_date: datetime.date, verbose: bool = True,
-                           download_dir: Path = DEFAULT_DATA_DIRECTORY):
+                           download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
         """
         Download all tweet archives from self.start_date to self.end_date
         :return: None
@@ -128,9 +128,12 @@ class Dozent:
             queue.put(sample_date['link'])
 
         queue.join()
-        tracker.join()
+        if verbose:
+            tracker.join()
+        else:
+            pass
 
-    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY):
+    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
         """
         Downloads four small test files from S3 for testing purposes
         """
@@ -166,4 +169,7 @@ class Dozent:
             queue.put(link)
 
         queue.join()
-        tracker.join()
+        if verbose:
+            tracker.join()
+        else:
+            pass
