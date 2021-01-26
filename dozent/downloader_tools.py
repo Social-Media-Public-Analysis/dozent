@@ -2,7 +2,9 @@ import multiprocessing
 import os
 import time
 import random
+import sys
 from typing import Tuple
+from threading import Lock
 from pySmartDL import SmartDL
 
 class DownloaderTools:
@@ -50,7 +52,7 @@ class DownloaderTools:
         return progress_percentage, prefix, suffix
 
     @classmethod
-    def download_with_pysmartdl(cls, link: str, download_dir: str, verbose: str = True):
+    def download_with_pysmartdl(cls, link: str, download_dir: str, task_id: int, verbose: str = True):
         """
         Downloads file from link using PySmartDL
 
@@ -60,7 +62,7 @@ class DownloaderTools:
 
         downloader_obj = SmartDL(link, download_dir, progress_bar=False)
 
-        task_id = None
+        tracker = None
         # obj = SmartDL(urls, progress_bar=False)
         # obj.start()
 
@@ -69,8 +71,11 @@ class DownloaderTools:
         while not downloader_obj.isFinished():
             if verbose:
                 progress = cls._make_progress_status(downloader_obj)
-                print(f"{progress[1]} {progress[2]}")
-            if task_id is not None:
+                lock = Lock()
+                lock.acquire() # will block if lock is already held
+                sys.stdout.write(f"[{task_id}] {progress[1]} {progress[2]}\r")
+                lock.release()
+            if tracker is not None:
                 pass # tracker.update(task_id)
             time.sleep(random.random() / 4.0)
 

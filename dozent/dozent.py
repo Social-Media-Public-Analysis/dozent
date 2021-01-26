@@ -21,18 +21,19 @@ LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path, verbose: bool):
+    def __init__(self, queue: Queue, download_dir: Path, verbose: bool, task_id: int):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
         self.verbose = verbose
+        self.task_id = task_id
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), verbose=self.verbose)
+                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), verbose=self.verbose, task_id = self.task_id)
             finally:
                 self.queue.task_done()
 
@@ -108,8 +109,10 @@ class Dozent:
 
         os.makedirs(download_dir, exist_ok=True)
 
+        task_id = 1
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, verbose)
+            worker = _DownloadWorker(queue, download_dir, verbose, task_id)
+            task_id += 1
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
