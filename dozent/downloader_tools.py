@@ -1,8 +1,8 @@
 import multiprocessing
 import os
 import time
+import random
 from typing import Tuple
-
 from pySmartDL import SmartDL
 
 class DownloaderTools:
@@ -18,7 +18,6 @@ class DownloaderTools:
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
         """Function to make progress bar
-
         :param downloader_obj: SmartDL object that's currently downloading a file
         :return: the progress percentage in [0,100] and a string prefix/suffix to be output before/after a progress bar.
         """
@@ -48,10 +47,11 @@ class DownloaderTools:
         prefix = f"[{status}] {dl_size}Mb/{filesize}Mb {f'@{speed}' if speed else ''}"
         suffix = f"[{int(progress_percentage):3.0f}%{f', {eta} left' if eta else ''}]"
 
-        return progress_percentage, prefix, suffix
+        progress_bar = f"{prefix} {suffix}"
+        return progress_bar
 
     @classmethod
-    def download_with_pysmartdl(cls, link: str, download_dir: str):
+    def download_with_pysmartdl(cls, link: str, download_dir: str, verbose: str = True):
         """
         Downloads file from link using PySmartDL
 
@@ -59,16 +59,20 @@ class DownloaderTools:
         :param download_dir: A relative path to the download directory
         """
 
-        downloader_obj = SmartDL(link, download_dir)
+        downloader_obj = SmartDL(link, download_dir, progress_bar=False)
 
         task_id = None
+        # obj = SmartDL(urls, progress_bar=False)
+        # obj.start()
 
         downloader_obj.start(blocking=False)
 
         while not downloader_obj.isFinished():
+            if verbose:
+                print(cls._make_progress_status(downloader_obj))
             if task_id is not None:
                 pass # tracker.update(task_id)
-            time.sleep(.25)
+            time.sleep(random.random() / 4.0)
 
     @classmethod
     def download_with_axel(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated

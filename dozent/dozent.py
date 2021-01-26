@@ -21,17 +21,18 @@ LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path):
+    def __init__(self, queue: Queue, download_dir: Path, verbose: bool):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
+        self.verbose = verbose
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link, str(self.download_dir))
+                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), verbose=self.verbose)
             finally:
                 self.queue.task_done()
 
@@ -95,7 +96,7 @@ class Dozent:
 
         return links
 
-    def download_timeframe(self, start_date: datetime.date, end_date: datetime.date,
+    def download_timeframe(self, start_date: datetime.date, end_date: datetime.date, verbose: bool = True,
                            download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
         """
         Download all tweet archives from self.start_date to self.end_date
@@ -108,7 +109,7 @@ class Dozent:
         os.makedirs(download_dir, exist_ok=True)
 
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir)
+            worker = _DownloadWorker(queue, download_dir, verbose)
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -120,7 +121,7 @@ class Dozent:
 
         queue.join()
 
-    def download_test(self, download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
+    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
         """
         Downloads four small test files from S3 for testing purposes
         """
@@ -131,7 +132,7 @@ class Dozent:
         os.makedirs(download_dir, exist_ok=True)
 
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir)
+            worker = _DownloadWorker(queue, download_dir, verbose=verbose)
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -146,7 +147,7 @@ class Dozent:
         ]
 
         for link in test_download_links:
-            print("Queueing Link")
+            print(f"Queueing Link {link}")
             queue.put(link)
 
         queue.join()

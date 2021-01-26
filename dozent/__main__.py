@@ -68,7 +68,7 @@ if __name__ == "__main__":
             )
 
     elif command_line_arguments["dry_run"]:
-        _dozent_object.download_test()
+        _dozent_object.download_test(verbose=verbose)
 
         if command_line_arguments["timeit"]:
             print(
