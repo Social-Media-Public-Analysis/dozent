@@ -119,7 +119,7 @@ class Dozent:
             worker.start()
 
         for sample_date in self.get_links_for_days(start_date=start_date, end_date=end_date):
-            print(f"Queueing tweets download for {sample_date['month']}-{sample_date['year']}")
+            print(f"Queueing tweets download for {sample_date['day']}-{sample_date['month']}-{sample_date['year']}")
             queue.put(sample_date['link'])
 
         queue.join()
