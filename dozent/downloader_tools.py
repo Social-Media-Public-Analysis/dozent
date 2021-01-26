@@ -5,11 +5,6 @@ from typing import Tuple
 
 from pySmartDL import SmartDL
 
-try:
-    from .progress_tracker import ProgressTracker
-except ImportError:
-    from progress_tracker import ProgressTracker
-
 class DownloaderTools:
     __instance__ = None
 
@@ -56,26 +51,23 @@ class DownloaderTools:
         return progress_percentage, prefix, suffix
 
     @classmethod
-    def download_with_pysmartdl(cls, link: str, download_dir: str, tracker: ProgressTracker = None):
+    def download_with_pysmartdl(cls, link: str, download_dir: str):
         """
         Downloads file from link using PySmartDL
 
         :param link: link that needs to be downloaded
         :param download_dir: A relative path to the download directory
-        :param tracker: Used to track progress, defaults to None
         """
 
         downloader_obj = SmartDL(link, download_dir, progress_bar=False)
 
         task_id = None
-        if tracker:
-            task_id = tracker.register_task(link, lambda: DownloaderTools._make_progress_status(downloader_obj))
 
         downloader_obj.start(blocking=False)
 
         while not downloader_obj.isFinished():
             if task_id is not None:
-                tracker.update(task_id)
+                pass # tracker.update(task_id)
             time.sleep(.25)
 
     @classmethod

@@ -9,10 +9,8 @@ from typing import List, Dict
 
 try:
     from dozent.downloader_tools import DownloaderTools
-    from dozent.progress_tracker import ProgressTracker
 except ModuleNotFoundError:
     from downloader_tools import DownloaderTools
-    from progress_tracker import ProgressTracker
 
 CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
@@ -23,18 +21,17 @@ LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path, tracker: ProgressTracker = None):
+    def __init__(self, queue: Queue, download_dir: Path):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
-        self.tracker = tracker
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link, str(self.download_dir), tracker=self.tracker)
+                DownloaderTools.download_with_pysmartdl(link, str(self.download_dir))
             finally:
                 self.queue.task_done()
 
@@ -107,17 +104,11 @@ class Dozent:
 
         # Create a queue to communicate with the worker threads
         queue = Queue()
-        if verbose:
-            tracker = ProgressTracker()
-            tracker.daemon = True
-            tracker.start()
-        else:
-            tracker = None
 
         os.makedirs(download_dir, exist_ok=True)
 
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, tracker=tracker)
+            worker = _DownloadWorker(queue, download_dir)
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -128,10 +119,6 @@ class Dozent:
             queue.put(sample_date['link'])
 
         queue.join()
-        if verbose:
-            tracker.join()
-        else:
-            pass
 
     def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
         """
@@ -140,17 +127,11 @@ class Dozent:
 
         # Create a queue to communicate with the worker threads
         queue = Queue()
-        if verbose:
-            tracker = ProgressTracker()
-            tracker.daemon = True
-            tracker.start()
-        else:
-            tracker = None
 
         os.makedirs(download_dir, exist_ok=True)
 
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, tracker=tracker)
+            worker = _DownloadWorker(queue, download_dir)
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -169,7 +150,3 @@ class Dozent:
             queue.put(link)
 
         queue.join()
-        if verbose:
-            tracker.join()
-        else:
-            pass
