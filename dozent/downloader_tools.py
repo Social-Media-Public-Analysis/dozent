@@ -47,8 +47,7 @@ class DownloaderTools:
         prefix = f"[{status}] {dl_size}Mb/{filesize}Mb {f'@{speed}' if speed else ''}"
         suffix = f"[{int(progress_percentage):3.0f}%{f', {eta} left' if eta else ''}]"
 
-        progress_bar = f"{prefix} {suffix}"
-        return progress_bar
+        return progress_percentage, prefix, suffix
 
     @classmethod
     def download_with_pysmartdl(cls, link: str, download_dir: str, verbose: str = True):
@@ -69,7 +68,8 @@ class DownloaderTools:
 
         while not downloader_obj.isFinished():
             if verbose:
-                print(cls._make_progress_status(downloader_obj))
+                progress = cls._make_progress_status(downloader_obj)
+                print(f"{progress[1]} {progress[2]}")
             if task_id is not None:
                 pass # tracker.update(task_id)
             time.sleep(random.random() / 4.0)
