@@ -59,7 +59,7 @@ class DownloaderTools:
         :param download_dir: A relative path to the download directory
         """
 
-        downloader_obj = SmartDL(link, download_dir, progress_bar=False)
+        downloader_obj = SmartDL(link, download_dir)
 
         task_id = None
 
