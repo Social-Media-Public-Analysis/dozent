@@ -1,14 +1,9 @@
 import multiprocessing
 import os
 import time
+import random
 from typing import Tuple
-
 from pySmartDL import SmartDL
-
-try:
-    from .progress_tracker import ProgressTracker
-except ImportError:
-    from progress_tracker import ProgressTracker
 
 class DownloaderTools:
     __instance__ = None
@@ -23,7 +18,6 @@ class DownloaderTools:
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
         """Function to make progress bar
-
         :param downloader_obj: SmartDL object that's currently downloading a file
         :return: the progress percentage in [0,100] and a string prefix/suffix to be output before/after a progress bar.
         """
@@ -56,27 +50,29 @@ class DownloaderTools:
         return progress_percentage, prefix, suffix
 
     @classmethod
-    def download_with_pysmartdl(cls, link: str, download_dir: str, tracker: ProgressTracker = None):
+    def download_with_pysmartdl(cls, link: str, download_dir: str, verbose: str = True):
         """
         Downloads file from link using PySmartDL
 
         :param link: link that needs to be downloaded
         :param download_dir: A relative path to the download directory
-        :param tracker: Used to track progress, defaults to None
         """
 
         downloader_obj = SmartDL(link, download_dir, progress_bar=False)
 
         task_id = None
-        if tracker:
-            task_id = tracker.register_task(link, lambda: DownloaderTools._make_progress_status(downloader_obj))
+        # obj = SmartDL(urls, progress_bar=False)
+        # obj.start()
 
         downloader_obj.start(blocking=False)
 
         while not downloader_obj.isFinished():
+            if verbose:
+                progress = cls._make_progress_status(downloader_obj)
+                print(f"{progress[1]} {progress[2]}")
             if task_id is not None:
-                tracker.update(task_id)
-            time.sleep(.25)
+                pass # tracker.update(task_id)
+            time.sleep(random.random() / 4.0)
 
     @classmethod
     def download_with_axel(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated

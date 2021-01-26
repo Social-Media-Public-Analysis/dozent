@@ -3,7 +3,6 @@ from os.path import exists
 from os import mkdir
 from shutil import rmtree
 from dozent.downloader_tools import DownloaderTools
-from dozent.progress_tracker import ProgressTracker
 
 from pySmartDL import SmartDL
 from pySmartDL.control_thread import ControlThread
@@ -72,7 +71,7 @@ class DownloaderToolsTestCase(unittest.TestCase):
 
         DownloaderTools.download_with_pysmartdl(link='http://ipv4.download.thinkbroadband.com/20MB.zip',
                                                 download_dir='test_downloader_dir',
-                                                tracker=ProgressTracker())
+                                                )
 
         self.assertTrue(exists('test_downloader_dir/20MB.zip'))
 
