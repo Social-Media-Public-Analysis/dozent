@@ -7,6 +7,11 @@ from typing import Tuple
 from threading import Lock
 from pySmartDL import SmartDL
 
+# Used for tracking and displaying download progress bars
+global global_progress_bars
+
+global_progress_bars = ["null"] * multiprocessing.cpu_count()
+
 class DownloaderTools:
     __instance__ = None
 
@@ -61,11 +66,6 @@ class DownloaderTools:
         """
 
         downloader_obj = SmartDL(link, download_dir, progress_bar=False)
-
-        tracker = None
-        # obj = SmartDL(urls, progress_bar=False)
-        # obj.start()
-
         downloader_obj.start(blocking=False)
 
         while not downloader_obj.isFinished():
@@ -73,11 +73,13 @@ class DownloaderTools:
                 progress = cls._make_progress_status(downloader_obj)
                 lock = Lock()
                 lock.acquire() # will block if lock is already held
-                sys.stdout.write(f"[{task_id}] {progress[1]} {progress[2]}\r")
+                global_progress_bars[task_id] = f"[{task_id}] {progress[1]} {progress[2]}"
+                sys.stdout.write(f"{global_progress_bars[task_id]}\r")
+                sys.stdout.flush()
                 lock.release()
-            if tracker is not None:
-                pass # tracker.update(task_id)
-            time.sleep(random.random() / 4.0)
+
+            # Sleep for a random interval between 0.01 and 0.25 seconds
+            time.sleep((random.random() + 0.01) / 4.0)
 
     @classmethod
     def download_with_axel(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated
