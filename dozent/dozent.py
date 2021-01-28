@@ -21,19 +21,20 @@ LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path, task_id: int, verbose: bool):
+    def __init__(self, queue: Queue, download_dir: Path, task_id: int, number_of_dates: int, verbose: bool):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
-        self.verbose = verbose
         self.task_id = task_id
+        self.number_of_dates = number_of_dates
+        self.verbose = verbose
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), task_id = self.task_id, verbose=self.verbose)
+                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), task_id = self.task_id, number_of_dates = self.number_of_dates, verbose=self.verbose)
             finally:
                 self.queue.task_done()
 
@@ -109,14 +110,11 @@ class Dozent:
 
         os.makedirs(download_dir, exist_ok=True)
 
-        task_id = 0
-        for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, task_id, verbose)
+        number_of_dates = (end_date - start_date).days + 1
 
-            if task_id < (multiprocessing.cpu_count() - 1):
-                task_id += 1
-            else:
-                task_id = 0
+        task_id = 0
+        for x in range(number_of_dates):
+            worker = _DownloadWorker(queue, download_dir, task_id, number_of_dates, verbose)
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -139,7 +137,10 @@ class Dozent:
         os.makedirs(download_dir, exist_ok=True)
 
         task_id = 0
-        for x in range(multiprocessing.cpu_count()):
+
+        thread_count = 2 * multiprocessing.cpu_count()
+
+        for x in range(thread_count):
             worker = _DownloadWorker(queue, download_dir, task_id=task_id, verbose=verbose)
 
             if task_id < (multiprocessing.cpu_count() - 1):
