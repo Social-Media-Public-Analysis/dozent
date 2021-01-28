@@ -117,14 +117,12 @@ class Dozent:
         if number_of_dates < 4:
             for x in range(multiprocessing.cpu_count() * 2):
                 worker = _DownloadWorker(queue, download_dir, task_id, number_of_dates, verbose)
-                # worker.set_verbosity(verbose=verbosity)
                 # Setting daemon to True will let the main thread exit even though the workers are blocking
                 worker.daemon = True
                 worker.start()
         else:
             for x in range(number_of_dates):
                 worker = _DownloadWorker(queue, download_dir, task_id, number_of_dates, verbose)
-                # worker.set_verbosity(verbose=verbosity)
                 # Setting daemon to True will let the main thread exit even though the workers are blocking
                 worker.daemon = True
                 worker.start()
