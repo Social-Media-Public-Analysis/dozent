@@ -1,5 +1,6 @@
 import time
 import sys
+from hurry.filesize import size
 from typing import Tuple
 from threading import Lock
 from pySmartDL import SmartDL
@@ -81,7 +82,7 @@ class DownloaderTools:
                 )
                 cls._update_global_download_size()
                 sys.stdout.write(
-                    f"{global_download_size} Bytes / {global_final_download_size} Bytes    \r"
+                    f"{size(global_download_size)} / {size(global_final_download_size)}    \r"
                 )
                 sys.stdout.flush()
                 lock.release()
