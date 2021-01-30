@@ -21,18 +21,19 @@ LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path, verbose: bool):
+    def __init__(self, queue: Queue, download_dir: Path, task_id: int, verbose: bool):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
         self.verbose = verbose
+        self.task_id = task_id
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), verbose=self.verbose)
+                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), task_id = self.task_id, verbose=self.verbose)
             finally:
                 self.queue.task_done()
 
@@ -108,15 +109,21 @@ class Dozent:
 
         os.makedirs(download_dir, exist_ok=True)
 
+        task_id = 0
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, verbose)
+            worker = _DownloadWorker(queue, download_dir, task_id, verbose)
+
+            if task_id < (multiprocessing.cpu_count() - 1):
+                task_id += 1
+            else:
+                task_id = 0
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             worker.start()
 
         for sample_date in self.get_links_for_days(start_date=start_date, end_date=end_date):
-            print(f"Queueing tweets download for {sample_date['month']}-{sample_date['year']}")
+            print(f"Queueing tweets download for {sample_date['day']}-{sample_date['month']}-{sample_date['year']}")
             queue.put(sample_date['link'])
 
         queue.join()
@@ -131,8 +138,15 @@ class Dozent:
 
         os.makedirs(download_dir, exist_ok=True)
 
+        task_id = 0
         for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, verbose=verbose)
+            worker = _DownloadWorker(queue, download_dir, task_id=task_id, verbose=verbose)
+
+            if task_id < (multiprocessing.cpu_count() - 1):
+                task_id += 1
+            else:
+                task_id = 0
+
             # worker.set_verbosity(verbose=verbosity)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True

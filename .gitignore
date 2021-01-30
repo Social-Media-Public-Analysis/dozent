@@ -132,3 +132,6 @@ dmypy.json
 .idea/
 dozent/__pycache__/
 tests/__pycache__/
+
+# Folders
+/data

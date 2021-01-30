@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
         if command_line_arguments["timeit"]:
             print(
-                f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
+                f"\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
             )
 
     else:
