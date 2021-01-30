@@ -5,6 +5,7 @@ import random
 from typing import Tuple
 from pySmartDL import SmartDL
 
+
 class DownloaderTools:
     __instance__ = None
 
@@ -13,7 +14,9 @@ class DownloaderTools:
             DownloaderTools.__instance__ = self
 
         else:
-            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
+            raise RuntimeError(
+                f"Singleton {self.__class__.__name__} class is created more than once!"
+            )
 
     @staticmethod
     def _make_progress_status(downloader_obj: SmartDL) -> Tuple[float, str, str]:
@@ -31,17 +34,17 @@ class DownloaderTools:
             eta = downloader_obj.get_eta(human=True)
             progress_percentage = 100.0 * downloader_obj.get_progress()
 
-            eta = eta.split(',')[0]
-            eta_parts = eta.split(' ')
+            eta = eta.split(",")[0]
+            eta_parts = eta.split(" ")
             eta_unit = eta_parts[1][:3]
-            if eta_unit == 'hou':
-                eta_unit = 'hrs'
+            if eta_unit == "hou":
+                eta_unit = "hrs"
             eta = f"{float(eta_parts[0]):3.0f}{eta_unit}"
 
         except AttributeError:
             dl_size = 0
-            speed = ''
-            eta = ''
+            speed = ""
+            eta = ""
             progress_percentage = 0
 
         prefix = f"[{status}] {dl_size}Mb/{filesize}Mb {f'@{speed}' if speed else ''}"
@@ -71,20 +74,26 @@ class DownloaderTools:
                 progress = cls._make_progress_status(downloader_obj)
                 print(f"{progress[1]} {progress[2]}")
             if task_id is not None:
-                pass # tracker.update(task_id)
+                pass  # tracker.update(task_id)
             time.sleep(random.random() / 4.0)
 
     @classmethod
-    def download_with_axel(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated
+    def download_with_axel(
+        cls, link: str
+    ):  # skip_tests: Only possible on Ubuntu and depreciated
         """Downloads file from link using axel
 
         :param link: link that needs to be downloaded
         :return: None
         """
-        os.system(f"axel --verbose --alternate --num-connections={cls._connections_count} {link}")
+        os.system(
+            f"axel --verbose --alternate --num-connections={cls._connections_count} {link}"
+        )
 
     @classmethod
-    def download_with_aria2(cls, link: str):  # skip_tests: Only possible on Ubuntu and depreciated
+    def download_with_aria2(
+        cls, link: str
+    ):  # skip_tests: Only possible on Ubuntu and depreciated
         """
         Downloads file from link using aria2
         :param link: link that needs to be downloaded
@@ -94,7 +103,7 @@ class DownloaderTools:
     _connections_count = 2 * multiprocessing.cpu_count()
 
     _downloaders = {
-        'pySmartDL': download_with_pysmartdl.__func__,
-        'Axel': download_with_axel.__func__,
-        'aria2': download_with_aria2.__func__
+        "pySmartDL": download_with_pysmartdl.__func__,
+        "Axel": download_with_axel.__func__,
+        "aria2": download_with_aria2.__func__,
     }
