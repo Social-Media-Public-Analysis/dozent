@@ -18,7 +18,6 @@ global_final_download_size = 0
 
 import random
 
-
 class DownloaderTools:
     __instance__ = None
 
@@ -102,7 +101,6 @@ class DownloaderTools:
                 sys.stdout.write(
                     f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)}    \r"
                 )
-
                 sys.stdout.flush()
                 lock.release()
             # Sleep for a random interval between 0.01 and 0.25 seconds

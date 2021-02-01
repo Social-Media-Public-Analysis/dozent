@@ -12,7 +12,8 @@ CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / "data"
 
 parser = argparse.ArgumentParser(
-    description="A powerful downloader to get tweets from twitter for our compute. " "The first step of many"
+    description="A powerful downloader to get tweets from twitter for our compute. "
+    "The first step of many"
 )
 parser.add_argument(
     "-s",
@@ -30,7 +31,8 @@ parser.add_argument("-t", "--timeit", help="Show total program runtime", default
 parser.add_argument(
     "-o",
     "--output-directory",
-    help="Output Directory where the file will be stored. " "Defaults to the data/ directory",
+    help="Output Directory where the file will be stored. "
+    "Defaults to the data/ directory",
     default=DEFAULT_DATA_DIRECTORY,
 )
 parser.add_argument(
@@ -61,13 +63,17 @@ if __name__ == "__main__":
         )
 
         if command_line_arguments["timeit"]:
-            print(f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
+            print(
+                f"Download Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
+            )
 
     elif command_line_arguments["dry_run"]:
         _dozent_object.download_test(verbose=verbose)
 
         if command_line_arguments["timeit"]:
-            print(f"\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
+            print(
+                f"\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
+            )
 
     else:
         parser.print_help()
