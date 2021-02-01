@@ -4,7 +4,7 @@ Dozent is a powerful downloader that is used to collect large amounts of Twitter
 
 It is built on top of [PySmartDL](https://pypi.org/project/pySmartDL/) and multithreading, similar to how traditional download accelerators like [axel](https://linux.die.net/man/1/axel), [aria2c](https://linux.die.net/man/1/aria2c) and [aws s3](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3-commands.html) work, ensuring that the biggest bottlenecks are your network and your hardware.
 
-The data that is downloaded is already heavily compressed to reduce download times and save local storage. When uncompressed, the data can easily add up to several petabytes depending on the timeframe of data being collected. Fortunately, you do not have to decompress the data to analyze it! We are working on a separate big data tool named [Murpheus](https://github.com/Social-Media-Public-Analysis/murpheus) that uses Dask to analyze the data without needing to decompress it.
+The data that is downloaded is already heavily compressed to reduce download times and save local storage. When uncompressed, the data can easily add up to several terabytes depending on the timeframe of data being collected. Fortunately, you do not have to decompress the data to analyze it! We are working on a separate big data tool named [Murpheus](https://github.com/Social-Media-Public-Analysis/murpheus) that uses Dask to analyze the data without needing to decompress it.
 
 If you have any ideas on how to improve Dozent, please open an issue [here](https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues) and tell us how!
 
@@ -90,3 +90,18 @@ Download all tweets from March 12th, 2020 to March 15th, 2020
 ```bash
 $ docker run -it socialmediapublicanalysis/dozent:latest python -m dozent -s 2020-05-12 -e 2020-05-15
 ```
+
+# About the Data
+
+- Only collects Tweets in the English language
+- Tweets are stored in JSON format
+- Each day is a compressed file roughly 2.5 GB large or ~ 32 GB uncompressed
+- Each tweet has accompanying metadata about the tweet and user
+
+# Sample Data
+
+Interested in seeing what the data that Dozent collects looks like?
+
+Check it out!
+
+https://dozent-tests.s3.amazonaws.com/sample_data.json
