@@ -176,6 +176,14 @@ class Dozent:
         Downloads four small test files from S3 for testing purposes
         """
 
+        # Stores download links for sample data
+        test_download_links = [
+            "https://dozent-tests.s3.amazonaws.com/test_500K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_550K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_600K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
+        ]
+
         # Create a queue to communicate with the worker threads
         queue = Queue()
 
@@ -187,7 +195,7 @@ class Dozent:
 
         for x in range(thread_count):
             worker = _DownloadWorker(
-                queue, download_dir, task_id=task_id, verbose=verbose
+                queue, download_dir, task_id=task_id, number_of_dates=len(test_download_links), verbose=verbose
             )
 
             if task_id < (multiprocessing.cpu_count() - 1):
@@ -199,14 +207,6 @@ class Dozent:
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             worker.start()
-
-        # Stores download links for sample data
-        test_download_links = [
-            "https://dozent-tests.s3.amazonaws.com/test_500K.txt",
-            "https://dozent-tests.s3.amazonaws.com/test_550K.txt",
-            "https://dozent-tests.s3.amazonaws.com/test_600K.txt",
-            "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
-        ]
 
         for link in test_download_links:
             print(f"Queueing Link {link}")

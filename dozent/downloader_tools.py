@@ -82,7 +82,7 @@ class DownloaderTools:
                 )
                 cls._update_global_download_size()
                 sys.stdout.write(
-                    f"{size(global_download_size)} / {size(global_final_download_size)}    \r"
+                    f"{global_download_size} / {global_final_download_size}    \r"
                 )
                 sys.stdout.flush()
                 lock.release()
