@@ -5,7 +5,7 @@ from typing import Tuple
 
 from pySmartDL import SmartDL
 
-SUFFIXES = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 # Used for tracking and displaying download progress bars
 global global_progress_tracker
@@ -18,6 +18,7 @@ global_final_download_size = 0
 
 import random
 
+
 class DownloaderTools:
     __instance__ = None
 
@@ -25,9 +26,7 @@ class DownloaderTools:
         if DownloaderTools.__instance__ is None:
             DownloaderTools.__instance__ = self
         else:
-            raise RuntimeError(
-                f"Singleton {self.__class__.__name__} class is created more than once!"
-            )
+            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
 
     @staticmethod
     def _size(number_of_bytes: int) -> str:
@@ -38,14 +37,14 @@ class DownloaderTools:
         """
         i = 0
         while number_of_bytes >= 1024 and i < len(SUFFIXES) - 1:
-            number_of_bytes /= 1024.
+            number_of_bytes /= 1024.0
             i += 1
-        human_readable_bytes = ('%.2f' % number_of_bytes).rstrip('0').rstrip('.')
+        human_readable_bytes = ("%.2f" % number_of_bytes).rstrip("0").rstrip(".")
         return f"{human_readable_bytes} {SUFFIXES[i]}"
 
     @staticmethod
     def _get_individual_download_stats(
-            downloader_obj: SmartDL,
+        downloader_obj: SmartDL,
     ) -> Tuple[int, int, str, float, str]:
         download_size = downloader_obj.get_dl_size() >> 20
         file_size = downloader_obj.get_final_filesize() >> 20
@@ -94,13 +93,9 @@ class DownloaderTools:
             if verbose:
                 lock = Lock()
                 lock.acquire()
-                global_progress_tracker[task_id] = cls._get_individual_download_stats(
-                    downloader_obj
-                )
+                global_progress_tracker[task_id] = cls._get_individual_download_stats(downloader_obj)
                 cls._update_global_download_size()
-                sys.stdout.write(
-                    f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)}    \r"
-                )
+                sys.stdout.write(f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)}    \r")
                 sys.stdout.flush()
                 lock.release()
             # Sleep for a random interval between 0.01 and 0.25 seconds
