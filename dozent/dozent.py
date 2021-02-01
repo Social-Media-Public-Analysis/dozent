@@ -181,7 +181,7 @@ class Dozent:
             "https://dozent-tests.s3.amazonaws.com/test_500K.txt",
             "https://dozent-tests.s3.amazonaws.com/test_550K.txt",
             "https://dozent-tests.s3.amazonaws.com/test_600K.txt",
-            "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
+            "https://dozent-tests.s3.amazonaws.com/test_650K.txt"
         ]
 
         # Create a queue to communicate with the worker threads
