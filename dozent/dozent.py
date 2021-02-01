@@ -14,23 +14,15 @@ except ModuleNotFoundError:
 
 CURRENT_FILE_PATH = Path(__file__)
 DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / "data"
-TWITTER_ARCHIVE_STREAM_LINKS_PATH = (
-    CURRENT_FILE_PATH.parent / "twitter-archive-stream-links.json"
-)
+
+TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / "twitter-archive-stream-links.json"
 
 FIRST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
 LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
 
 class _DownloadWorker(Thread):  # skip_tests
-    def __init__(
-        self,
-        queue: Queue,
-        download_dir: Path,
-        task_id: int,
-        number_of_dates: int,
-        verbose: bool,
-    ):
+    def __init__(self, queue: Queue, download_dir: Path, task_id: int, verbose: bool):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
@@ -44,11 +36,7 @@ class _DownloadWorker(Thread):  # skip_tests
             link = self.queue.get()
             try:
                 DownloaderTools.download_with_pysmartdl(
-                    link=link,
-                    download_dir=str(self.download_dir),
-                    task_id=self.task_id,
-                    number_of_dates=self.number_of_dates,
-                    verbose=self.verbose,
+                    link=link, download_dir=str(self.download_dir), task_id=self.task_id, verbose=self.verbose
                 )
             finally:
                 self.queue.task_done()
@@ -142,6 +130,9 @@ class Dozent:
 
         task_id = 0
 
+        for sample_date in self.get_links_for_days(start_date=start_date, end_date=end_date):
+            print(f"Queueing tweets download for {sample_date['day']}-{sample_date['month']}-{sample_date['year']}")
+
         if number_of_dates < 4:
             for x in range(multiprocessing.cpu_count() * 2):
                 worker = _DownloadWorker(
@@ -169,9 +160,7 @@ class Dozent:
 
         queue.join()
 
-    def download_test(
-        self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY
-    ):  # skip_tests
+    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY):  # skip_tests
         """
         Downloads four small test files from S3 for testing purposes
         """
