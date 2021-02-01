@@ -12,6 +12,7 @@ global global_progress_bars
 
 global_progress_bars = ["null"] * multiprocessing.cpu_count()
 
+
 class DownloaderTools:
     __instance__ = None
 
@@ -38,17 +39,17 @@ class DownloaderTools:
             eta = downloader_obj.get_eta(human=True)
             progress_percentage = 100.0 * downloader_obj.get_progress()
 
-            eta = eta.split(',')[0]
-            eta_parts = eta.split(' ')
+            eta = eta.split(",")[0]
+            eta_parts = eta.split(" ")
             eta_unit = eta_parts[1][:3]
-            if eta_unit == 'hou':
-                eta_unit = 'hrs'
+            if eta_unit == "hou":
+                eta_unit = "hrs"
             eta = f"{float(eta_parts[0]):3.0f}{eta_unit}"
 
         except AttributeError:
             dl_size = 0
-            speed = ''
-            eta = ''
+            speed = ""
+            eta = ""
             progress_percentage = 0
 
         prefix = f"[{status}] {dl_size}Mb/{filesize}Mb {f'@{speed}' if speed else ''}"
@@ -72,7 +73,7 @@ class DownloaderTools:
             if verbose:
                 progress = cls._make_progress_status(downloader_obj)
                 lock = Lock()
-                lock.acquire() # will block if lock is already held
+                lock.acquire()  # will block if lock is already held
                 global_progress_bars[task_id] = f"[{task_id}] {progress[1]} {progress[2]}"
                 sys.stdout.write(f"{global_progress_bars[task_id]}\r")
                 sys.stdout.flush()
@@ -101,7 +102,7 @@ class DownloaderTools:
     _connections_count = 2 * multiprocessing.cpu_count()
 
     _downloaders = {
-        'pySmartDL': download_with_pysmartdl.__func__,
-        'Axel': download_with_axel.__func__,
-        'aria2': download_with_aria2.__func__
+        "pySmartDL": download_with_pysmartdl.__func__,
+        "Axel": download_with_axel.__func__,
+        "aria2": download_with_aria2.__func__,
     }
