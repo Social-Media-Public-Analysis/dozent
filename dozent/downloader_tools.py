@@ -1,8 +1,8 @@
-import time
 import sys
-from hurry.filesize import size
-from typing import Tuple
+import time
 from threading import Lock
+from typing import Tuple
+
 from pySmartDL import SmartDL
 
 # Used for tracking and displaying download progress bars
@@ -14,6 +14,7 @@ global_download_size = 0
 global global_final_download_size
 global_final_download_size = 0
 
+import random
 
 class DownloaderTools:
     __instance__ = None
@@ -87,4 +88,4 @@ class DownloaderTools:
                 sys.stdout.flush()
                 lock.release()
             # Sleep for a random interval between 0.01 and 0.25 seconds
-            time.sleep(0.25)
+            time.sleep(random.random() / 4)
