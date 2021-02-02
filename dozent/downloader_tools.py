@@ -1,7 +1,6 @@
 import sys
 import time
 from threading import Lock
-import numpy as np
 
 from pySmartDL import SmartDL
 
@@ -10,11 +9,15 @@ SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 # Used for tracking and displaying download progress bars
 global global_progress_tracker
 global_progress_tracker = [[0, 0, "0", 0, "0"]]
+
 global global_download_size
 global_download_size = 0
 
 global global_final_download_size
 global_final_download_size = 0
+
+global global_download_speed
+global_download_speed = 0
 
 import random
 
@@ -58,22 +61,35 @@ class DownloaderTools:
 
     @staticmethod
     def _update_global_download_size() -> None:
-        '''
+        """
         Updates download progress for all downloads
-        '''
+        """
         global global_download_size
-        global_download_size = sum([index[0]for index in global_progress_tracker])
+        updated_size = sum([index[0] for index in global_progress_tracker])
+
+        if updated_size > global_download_size:
+            global_download_size = updated_size
 
     @staticmethod
     def _get_final_download_size() -> int:
-        '''
+        """
         Retrieves the total download size for all downloads
         :return: total download size in bytes
-        '''
+        """
         global_final_download_size = 0
         for download in global_progress_tracker:
             global_final_download_size += download[1]
         return global_final_download_size
+
+    @staticmethod
+    def _update_global_download_speed() -> None:
+        """
+        Updates global download speed for all downloads
+        """
+        global global_download_speed
+
+        download_speeds = [int(index[2]) for index in global_progress_tracker]
+        global_download_speed = int(sum(download_speeds) / len(download_speeds))
 
     @classmethod
     def download_with_pysmartdl(
@@ -108,10 +124,12 @@ class DownloaderTools:
                     downloader_obj
                 )
                 cls._update_global_download_size()
+                cls._update_global_download_speed()
+
                 sys.stdout.write(
-                    f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)}    \r"
+                    f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s       \r"
                 )
                 sys.stdout.flush()
                 lock.release()
-            # Sleep for a random interval between 0.01 and 0.25 seconds
-            time.sleep(random.random() / 4)
+            # Sleep for a random interval between 500 to 750 milliseconds
+            time.sleep((random.random() / 4) + 0.5)
