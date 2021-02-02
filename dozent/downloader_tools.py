@@ -148,7 +148,9 @@ class DownloaderTools:
                 cls._update_global_download_speed()
                 cls._update_global_progress_percentage()
 
-                sys.stdout.write(f"{global_progress_tracker}\n")
+                sys.stdout.write(
+                    f"> {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s [{global_progress_percentage}%]      \r"
+                )
 
                 sys.stdout.flush()
                 lock.release()
