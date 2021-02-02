@@ -46,7 +46,8 @@ class DownloaderTools:
         while number_of_bytes >= 1024 and i < len(SUFFIXES) - 1:
             number_of_bytes /= 1024.0
             i += 1
-        human_readable_bytes = ("%.2f" % number_of_bytes).rstrip("0").rstrip(".")
+
+        human_readable_bytes = ("%.2f" % number_of_bytes).rstrip(".")
         return f"{human_readable_bytes} {SUFFIXES[i]}"
 
     @staticmethod
@@ -110,6 +111,19 @@ class DownloaderTools:
         if updated_percentage > global_progress_percentage:
             global_progress_percentage = updated_percentage
 
+    @staticmethod
+    def _create_progress_bar(size: int) -> str:
+        """
+        Creates a progress bar
+        :param size: total length of progres bar
+        :return: Progress bar as a string
+        """
+        global global_progress_percentage
+        number_of_bars = int(global_progress_percentage * 0.01 * size)
+        number_of_dashes = size - number_of_bars
+
+        return f"[{'#' * number_of_bars}{'-' * number_of_dashes}]"
+
     @classmethod
     def download_with_pysmartdl(
         cls,
@@ -149,10 +163,10 @@ class DownloaderTools:
                 cls._update_global_progress_percentage()
 
                 sys.stdout.write(
-                    f"> {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s [{global_progress_percentage}%]      \r"
+                    f"> {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s {cls._create_progress_bar(size=20)} [{global_progress_percentage}%]                \r"
                 )
 
                 sys.stdout.flush()
                 lock.release()
             # Sleep for a random interval between 250 to 500 milliseconds
-            time.sleep((random.random() / 4) + 0.25)
+            time.sleep(0.1)
