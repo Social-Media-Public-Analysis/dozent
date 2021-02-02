@@ -9,7 +9,7 @@ SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 # Used for tracking and displaying download progress bars
 global global_progress_tracker
-global_progress_tracker = [[0, 0, "0", 0, "0"]]
+global_progress_tracker = [[0, 0, 0, 0, 0]]
 
 global global_download_size
 global_download_size = 0
@@ -139,6 +139,7 @@ class DownloaderTools:
             if verbose:
                 lock = Lock()
                 lock.acquire()
+
                 global_progress_tracker[task_id] = cls._get_individual_download_stats(
                     downloader_obj
                 )
@@ -147,9 +148,7 @@ class DownloaderTools:
                 cls._update_global_download_speed()
                 cls._update_global_progress_percentage()
 
-                sys.stdout.write(
-                    f"> {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s [{global_progress_percentage}%]      \r"
-                )
+                sys.stdout.write(f"{global_progress_tracker}\n")
 
                 sys.stdout.flush()
                 lock.release()

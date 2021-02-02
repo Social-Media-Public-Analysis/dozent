@@ -142,22 +142,18 @@ class Dozent:
 
         task_id = 0
 
-        if number_of_dates < 4:
-            for x in range(multiprocessing.cpu_count() * 2):
-                worker = _DownloadWorker(
-                    queue, download_dir, task_id, number_of_dates, verbose
-                )
-                # Setting daemon to True will let the main thread exit even though the workers are blocking
-                worker.daemon = True
-                worker.start()
-        else:
-            for x in range(number_of_dates):
-                worker = _DownloadWorker(
-                    queue, download_dir, task_id, number_of_dates, verbose
-                )
-                # Setting daemon to True will let the main thread exit even though the workers are blocking
-                worker.daemon = True
-                worker.start()
+        for x in range(number_of_dates):
+            worker = _DownloadWorker(
+                queue=queue,
+                download_dir=download_dir,
+                task_id=task_id,
+                number_of_dates=number_of_dates,
+                verbose=verbose,
+            )
+            task_id += 1
+            # Setting daemon to True will let the main thread exit even though the workers are blocking
+            worker.daemon = True
+            worker.start()
 
         for sample_date in self.get_links_for_days(
             start_date=start_date, end_date=end_date
@@ -181,7 +177,7 @@ class Dozent:
             "https://dozent-tests.s3.amazonaws.com/test_500K.txt",
             "https://dozent-tests.s3.amazonaws.com/test_550K.txt",
             "https://dozent-tests.s3.amazonaws.com/test_600K.txt",
-            "https://dozent-tests.s3.amazonaws.com/test_650K.txt"
+            "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
         ]
 
         # Create a queue to communicate with the worker threads
@@ -191,19 +187,17 @@ class Dozent:
 
         task_id = 0
 
-        thread_count = 2 * multiprocessing.cpu_count()
+        number_of_links = len(test_download_links)
 
-        for x in range(thread_count):
+        for x in range(number_of_links):
             worker = _DownloadWorker(
-                queue, download_dir, task_id=task_id, number_of_dates=len(test_download_links), verbose=verbose
+                queue=queue,
+                download_dir=download_dir,
+                task_id=task_id,
+                number_of_dates=number_of_links,
+                verbose=verbose,
             )
-
-            if task_id < (multiprocessing.cpu_count() - 1):
-                task_id += 1
-            else:
-                task_id = 0
-
-            # worker.set_verbosity(verbose=verbosity)
+            task_id += 1
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             worker.start()
