@@ -1,5 +1,6 @@
 import sys
 import time
+import random
 from threading import Lock
 
 from pySmartDL import SmartDL
@@ -19,7 +20,8 @@ global_final_download_size = 0
 global global_download_speed
 global_download_speed = 0
 
-import random
+global global_progress_percentage
+global_progress_percentage = 0
 
 
 class DownloaderTools:
@@ -67,6 +69,7 @@ class DownloaderTools:
         global global_download_size
         updated_size = sum([index[0] for index in global_progress_tracker])
 
+        # Prevents lagging threads from updating with lower values
         if updated_size > global_download_size:
             global_download_size = updated_size
 
@@ -90,6 +93,22 @@ class DownloaderTools:
 
         download_speeds = [int(index[2]) for index in global_progress_tracker]
         global_download_speed = int(sum(download_speeds) / len(download_speeds))
+
+    @staticmethod
+    def _update_global_progress_percentage() -> None:
+        """
+        Updates global progress percentage for all downloads
+        """
+        global global_progress_percentage
+
+        updated_percentage = [float(index[3]) for index in global_progress_tracker]
+        updated_percentage = round(
+            float(sum(updated_percentage) / len(updated_percentage) * 100), 2
+        )
+
+        # Prevents lagging threads from updating with lower values
+        if updated_percentage > global_progress_percentage:
+            global_progress_percentage = updated_percentage
 
     @classmethod
     def download_with_pysmartdl(
@@ -123,13 +142,16 @@ class DownloaderTools:
                 global_progress_tracker[task_id] = cls._get_individual_download_stats(
                     downloader_obj
                 )
+
                 cls._update_global_download_size()
                 cls._update_global_download_speed()
+                cls._update_global_progress_percentage()
 
                 sys.stdout.write(
-                    f" {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s       \r"
+                    f"> {cls._size(global_download_size)} / {cls._size(global_final_download_size)} @ {cls._size(global_download_speed)}/s [{global_progress_percentage}%]      \r"
                 )
+
                 sys.stdout.flush()
                 lock.release()
-            # Sleep for a random interval between 500 to 750 milliseconds
-            time.sleep((random.random() / 4) + 0.5)
+            # Sleep for a random interval between 250 to 500 milliseconds
+            time.sleep((random.random() / 4) + 0.25)
