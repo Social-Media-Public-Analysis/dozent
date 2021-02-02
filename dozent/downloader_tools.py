@@ -200,7 +200,7 @@ class DownloaderTools:
                 cls._update_global_eta()
 
                 sys.stdout.write(
-                    f"> {cls._human_readable_size(global_download_size)} / {cls._human_readable_size(global_final_download_size)} @ {cls._human_readable_size(global_download_speed)}/s {cls._create_progress_bar(size=20)} [{global_progress_percentage}%] {cls._human_readable_time(global_eta)} left                \r"
+                    f"> {cls._human_readable_size(global_download_size)} / {cls._human_readable_size(global_final_download_size)} @ {cls._human_readable_size(global_download_speed)}/s {cls._create_progress_bar(size=20)} [ {global_progress_percentage:.2f}% ]{cls._human_readable_time(global_eta)} left                \r"
                 )
 
                 sys.stdout.flush()

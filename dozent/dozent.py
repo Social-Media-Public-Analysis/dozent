@@ -1,6 +1,5 @@
 import datetime
 import json
-import multiprocessing
 import os
 from pathlib import Path
 from queue import Queue
@@ -163,6 +162,7 @@ class Dozent:
             )
             queue.put(sample_date["link"])
 
+        print("")
         queue.join()
 
     def download_test(
@@ -197,6 +197,7 @@ class Dozent:
                 number_of_dates=number_of_links,
                 verbose=verbose,
             )
+
             task_id += 1
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -206,4 +207,5 @@ class Dozent:
             print(f"Queueing Link {link}")
             queue.put(link)
 
+        print("")
         queue.join()
