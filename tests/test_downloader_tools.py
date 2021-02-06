@@ -1,13 +1,10 @@
 import unittest
-from os.path import exists
-from os import mkdir
-from shutil import rmtree
-from dozent.downloader_tools import DownloaderTools
-
-from pySmartDL import SmartDL
-from pySmartDL.control_thread import ControlThread
 from collections import namedtuple
-import threading
+from os import mkdir
+from os.path import exists
+from shutil import rmtree
+
+from dozent.downloader_tools import DownloaderTools
 
 DownloadProgress = namedtuple('DownloadProgress', 'dl_size filesize speed status')
 
