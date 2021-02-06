@@ -1,13 +1,10 @@
 import unittest
-from os.path import exists
-from os import mkdir
-from shutil import rmtree
-from dozent.downloader_tools import DownloaderTools
-
-from pySmartDL import SmartDL
-from pySmartDL.control_thread import ControlThread
 from collections import namedtuple
-import threading
+from os import mkdir
+from os.path import exists
+from shutil import rmtree
+
+from dozent.downloader_tools import DownloaderTools
 
 DownloadProgress = namedtuple('DownloadProgress', 'dl_size filesize speed status')
 
@@ -31,11 +28,12 @@ class DownloaderToolsTestCase(unittest.TestCase):
 
         DownloaderTools.download_with_pysmartdl(link='http://ipv4.download.thinkbroadband.com/20MB.zip',
                                                 download_dir='test_downloader_dir',
-                                                task_id=0
+                                                task_id=0,
+                                                number_of_dates=1,
+                                                verbose=False
                                                 )
 
         self.assertTrue(exists('test_downloader_dir/20MB.zip'))
-
 
 if __name__ == "__main__":
     unittest.main()
