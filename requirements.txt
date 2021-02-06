@@ -3,4 +3,3 @@ aria2p
 pytest
 pyfiglet
 numpy
-hurry.filesize
