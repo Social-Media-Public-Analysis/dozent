@@ -1,8 +1,8 @@
-import threading
-import sys
-import traceback
 import os
 import signal
+import sys
+import threading
+import traceback
 
 """
 usage: install()
@@ -31,6 +31,7 @@ def patched_init(self, *args, **kwargs):
             original_run(*args, **kw)
         except Exception:
             sys.excepthook(*sys.exc_info())
+
     self.run = patched_run
 
 

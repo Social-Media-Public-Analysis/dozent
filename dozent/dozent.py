@@ -1,6 +1,5 @@
 import datetime
 import json
-import multiprocessing
 import os
 from pathlib import Path
 from queue import Queue
@@ -13,27 +12,43 @@ except ModuleNotFoundError:
     from downloader_tools import DownloaderTools
 
 CURRENT_FILE_PATH = Path(__file__)
-DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / 'data'
-TWITTER_ARCHIVE_STREAM_LINKS_PATH = CURRENT_FILE_PATH.parent / 'twitter-archive-stream-links.json'
+DEFAULT_DATA_DIRECTORY = CURRENT_FILE_PATH.parent.parent / "data"
+TWITTER_ARCHIVE_STREAM_LINKS_PATH = (
+    CURRENT_FILE_PATH.parent / "twitter-archive-stream-links.json"
+)
 
 FIRST_DAY_OF_SUPPORT = datetime.date(2017, 6, 1)
 LAST_DAY_OF_SUPPORT = datetime.date(2020, 6, 30)
 
-class _DownloadWorker(Thread):  # skip_tests
 
-    def __init__(self, queue: Queue, download_dir: Path, task_id: int, verbose: bool):
+class _DownloadWorker(Thread):  # skip_tests
+    def __init__(
+        self,
+        queue: Queue,
+        download_dir: Path,
+        task_id: int,
+        number_of_dates: int,
+        verbose: bool,
+    ):
         Thread.__init__(self)
         self.queue = queue
         self.download_dir = download_dir
-        self.verbose = verbose
         self.task_id = task_id
+        self.number_of_dates = number_of_dates
+        self.verbose = verbose
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             link = self.queue.get()
             try:
-                DownloaderTools.download_with_pysmartdl(link=link, download_dir=str(self.download_dir), task_id = self.task_id, verbose=self.verbose)
+                DownloaderTools.download_with_pysmartdl(
+                    link=link,
+                    download_dir=str(self.download_dir),
+                    task_id=self.task_id,
+                    number_of_dates=self.number_of_dates,
+                    verbose=self.verbose,
+                )
             finally:
                 self.queue.task_done()
 
@@ -49,7 +64,7 @@ class Dozent:
                 self.date_links: List[Dict[str, str]] = json.loads(file.read())
 
         else:
-            raise RuntimeError(f"Singleton {self.__class__.__name__} class is created more than once!")
+            raise RuntimeError('Multiple classes detected, this class might not be thread safe')
 
     @staticmethod
     def _make_date_from_date_link(date_link: Dict[str, str]) -> datetime.date:
@@ -59,13 +74,15 @@ class Dozent:
         :param date_link: date dictionary from `data/test_sample_files.json`. This is used to convert to the date
         :return: date object for the associated month
         """
-        day = int(date_link['day']) if date_link['day'] != 'NaN' else 1
-        month = int(date_link['month'])
-        year = int(date_link['year'])
+        day = int(date_link["day"]) if date_link["day"] != "NaN" else 1
+        month = int(date_link["month"])
+        year = int(date_link["year"])
 
         return datetime.date(year=year, month=month, day=day)
 
-    def get_links_for_days(self, start_date: datetime.date, end_date: datetime.date) -> List:
+    def get_links_for_days(
+        self, start_date: datetime.date, end_date: datetime.date
+    ) -> List:
         """
         Function to get the links for the given start and end days
         :return: date dictionaries that are within self.start_date and self.end_dates
@@ -73,22 +90,26 @@ class Dozent:
         links = []
 
         if not FIRST_DAY_OF_SUPPORT >= start_date:
-            RuntimeError(f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
-                         f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
-                         f'\nWe\'re planning on adding support for it soon.'
-                         f'Need that data sooner? Add an issue to out GitHub repo and we\'ll '
-                         f'walk you through the process'
-                         f'Link to our GitHub '
-                         f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
+            RuntimeError(
+                f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
+                f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
+                f"\nWe're planning on adding support for it soon."
+                f"Need that data sooner? Add an issue to out GitHub repo and we'll "
+                f"walk you through the process"
+                f"Link to our GitHub "
+                f"Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues"
+            )
 
         elif not end_date <= end_date:
-            RuntimeError(f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
-                         f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
-                         f'\nWe\'re planning on adding support for it soon.'
-                         f'Need that data sooner? Add an issue to out GitHub repo and we\'ll '
-                         f'walk you through the process'
-                         f'Link to our GitHub '
-                         f'Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues')
+            RuntimeError(
+                f'We currently only support the range {FIRST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}, '
+                f'{LAST_DAY_OF_SUPPORT.strftime("%d, %b %Y")}'
+                f"\nWe're planning on adding support for it soon."
+                f"Need that data sooner? Add an issue to out GitHub repo and we'll "
+                f"walk you through the process"
+                f"Link to our GitHub "
+                f"Issues: https://github.com/Twitter-Public-Analysis/Twitter-Public-Analysis/issues"
+            )
 
         for date_link in self.date_links:
             date = Dozent._make_date_from_date_link(date_link)
@@ -97,8 +118,13 @@ class Dozent:
 
         return links
 
-    def download_timeframe(self, start_date: datetime.date, end_date: datetime.date, verbose: bool = True,
-                           download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
+    def download_timeframe(
+        self,
+        start_date: datetime.date,
+        end_date: datetime.date,
+        verbose: bool = True,
+        download_dir: Path = DEFAULT_DATA_DIRECTORY,
+    ):  # skip_tests
         """
         Download all tweet archives from self.start_date to self.end_date
         :return: None
@@ -109,48 +135,40 @@ class Dozent:
 
         os.makedirs(download_dir, exist_ok=True)
 
-        task_id = 0
-        for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, task_id, verbose)
+        number_of_dates = (end_date - start_date).days + 1
 
-            if task_id < (multiprocessing.cpu_count() - 1):
-                task_id += 1
-            else:
-                task_id = 0
-            # worker.set_verbosity(verbose=verbosity)
+        task_id = 0
+
+        for x in range(number_of_dates):
+            worker = _DownloadWorker(
+                queue=queue,
+                download_dir=download_dir,
+                task_id=task_id,
+                number_of_dates=number_of_dates,
+                verbose=verbose,
+            )
+            task_id += 1
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             worker.start()
 
-        for sample_date in self.get_links_for_days(start_date=start_date, end_date=end_date):
-            print(f"Queueing tweets download for {sample_date['day']}-{sample_date['month']}-{sample_date['year']}")
-            queue.put(sample_date['link'])
+        for sample_date in self.get_links_for_days(
+            start_date=start_date, end_date=end_date
+        ):
+            print(
+                f"Queueing tweets download for {sample_date['day']}-{sample_date['month']}-{sample_date['year']}"
+            )
+            queue.put(sample_date["link"])
 
+        print("")
         queue.join()
 
-    def download_test(self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY): # skip_tests
+    def download_test(
+        self, verbose: bool = True, download_dir: Path = DEFAULT_DATA_DIRECTORY
+    ):  # skip_tests
         """
         Downloads four small test files from S3 for testing purposes
         """
-
-        # Create a queue to communicate with the worker threads
-        queue = Queue()
-
-        os.makedirs(download_dir, exist_ok=True)
-
-        task_id = 0
-        for x in range(multiprocessing.cpu_count()):
-            worker = _DownloadWorker(queue, download_dir, task_id=task_id, verbose=verbose)
-
-            if task_id < (multiprocessing.cpu_count() - 1):
-                task_id += 1
-            else:
-                task_id = 0
-
-            # worker.set_verbosity(verbose=verbosity)
-            # Setting daemon to True will let the main thread exit even though the workers are blocking
-            worker.daemon = True
-            worker.start()
 
         # Stores download links for sample data
         test_download_links = [
@@ -160,8 +178,32 @@ class Dozent:
             "https://dozent-tests.s3.amazonaws.com/test_650K.txt",
         ]
 
+        # Create a queue to communicate with the worker threads
+        queue = Queue()
+
+        os.makedirs(download_dir, exist_ok=True)
+
+        task_id = 0
+
+        number_of_links = len(test_download_links)
+
+        for x in range(number_of_links):
+            worker = _DownloadWorker(
+                queue=queue,
+                download_dir=download_dir,
+                task_id=task_id,
+                number_of_dates=number_of_links,
+                verbose=verbose,
+            )
+
+            task_id += 1
+            # Setting daemon to True will let the main thread exit even though the workers are blocking
+            worker.daemon = True
+            worker.start()
+
         for link in test_download_links:
             print(f"Queueing Link {link}")
             queue.put(link)
 
+        print("")
         queue.join()
