@@ -1,10 +1,12 @@
+import random
 import sys
 import time
 from threading import Lock
 
+import humanize
 from pySmartDL import SmartDL
 
-SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
+_TWO_DECIMALS = "%.2f"
 
 # Used for tracking and displaying download progress bars
 global global_progress_tracker
@@ -36,43 +38,6 @@ class DownloaderTools:
             raise RuntimeError(
                 f"Singleton {self.__class__.__name__} class is created more than once!"
             )
-
-    @staticmethod
-    def _human_readable_size(number_of_bytes: int) -> str:
-        """
-        Converts number of bytes into a human readable format
-        :param number_of_bytes: link that needs to be downloaded
-        :return: String representing number of bytes in human readable format
-        """
-        i = 0
-        while number_of_bytes >= 1024 and i < len(SUFFIXES) - 1:
-            number_of_bytes /= 1024.0
-            i += 1
-
-        human_readable_bytes = ("%.2f" % number_of_bytes).rstrip(".")
-        return f"{human_readable_bytes} {SUFFIXES[i]}"
-
-    @staticmethod
-    def _human_readable_time(seconds: int) -> str:
-        days = int(seconds / 86400)
-        seconds_remainder = seconds - (days * 86400)
-
-        hours = int(seconds_remainder / 3600)
-        seconds_remainder = seconds_remainder - (hours * 3600)
-
-        minutes = int(seconds_remainder / 60)
-        seconds_remainder = seconds_remainder - (minutes * 60)
-
-        human_readable_time = f"{days} d {hours} h {minutes} m {seconds_remainder} s"
-
-        if days == 0:
-            human_readable_time = human_readable_time.replace("0 d", "")
-        if hours == 0:
-            human_readable_time = human_readable_time.replace("0 h", "")
-        if minutes == 0:
-            human_readable_time = human_readable_time.replace("0 m", "")
-
-        return human_readable_time
 
     @staticmethod
     def _get_individual_download_stats(
@@ -117,7 +82,9 @@ class DownloaderTools:
         global global_download_speed
 
         download_speeds = [int(index[2]) for index in global_progress_tracker]
-        global_download_speed = int(sum(download_speeds) / len(download_speeds))
+        global_download_speed = int(
+            sum(download_speeds) / len(download_speeds)
+        )
 
     @staticmethod
     def _update_global_progress_percentage() -> None:
@@ -126,7 +93,9 @@ class DownloaderTools:
         """
         global global_progress_percentage
 
-        updated_percentage = [float(index[3]) for index in global_progress_tracker]
+        updated_percentage = [
+            float(index[3]) for index in global_progress_tracker
+        ]
         updated_percentage = round(
             float(sum(updated_percentage) / len(updated_percentage) * 100), 2
         )
@@ -190,18 +159,28 @@ class DownloaderTools:
                 lock = Lock()
                 lock.acquire()
 
-                global_progress_tracker[task_id] = cls._get_individual_download_stats(
-                    downloader_obj
-                )
+                global_progress_tracker[
+                    task_id
+                ] = cls._get_individual_download_stats(downloader_obj)
 
                 cls._update_global_download_size()
                 cls._update_global_download_speed()
                 cls._update_global_progress_percentage()
-                cls._update_global_eta()
 
-                sys.stdout.write(
-                    f"> {cls._human_readable_size(global_download_size)} / {cls._human_readable_size(global_final_download_size)} @ {cls._human_readable_size(global_download_speed)}/s {cls._create_progress_bar(size=20)} [ {global_progress_percentage:.2f}% ]{cls._human_readable_time(global_eta)} left                \r"
+                # Prevents the time output from being constantly updated
+                # to the point of being unreadable
+                if random.randint(1, 10) <= 10:
+                    cls._update_global_eta()
+
+                progress_bar = (
+                    f"> {humanize.naturalsize(global_download_size, binary=True, format=_TWO_DECIMALS)} / "
+                    f"{humanize.naturalsize(global_final_download_size, binary=True, format=_TWO_DECIMALS)} "
+                    f"@ {humanize.naturalsize(global_download_speed, binary=True)}/s {cls._create_progress_bar(size=20)} "
+                    f"[ {global_progress_percentage:.2f}% ] "
+                    f"{humanize.precisedelta(global_eta)} left                                \r"
                 )
+
+                sys.stdout.write(progress_bar.replace("i", ""))
 
                 sys.stdout.flush()
                 lock.release()
