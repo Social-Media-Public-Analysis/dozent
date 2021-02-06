@@ -64,9 +64,7 @@ class Dozent:
                 self.date_links: List[Dict[str, str]] = json.loads(file.read())
 
         else:
-            raise RuntimeError(
-                f"Singleton {self.__class__.__name__} class is created more than once!"
-            )
+            raise RuntimeError('Multiple classes detected, this class might not be thread safe')
 
     @staticmethod
     def _make_date_from_date_link(date_link: Dict[str, str]) -> datetime.date:
