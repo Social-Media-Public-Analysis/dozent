@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
   name = 'dozent',
   packages = ['dozent'],
-  version = '0.7',
+  version = '1.0',
   license='GNU-3',
   description = 'Dozent is a powerful downloader that is used to download a ton of twitter data from the internet archive.',
   long_description=long_description,
@@ -20,19 +20,21 @@ setup(
   package_data={
         '': ['*.json'],
   },
-  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/archive/v_07.tar.gz',
+  download_url = 'https://github.com/Social-Media-Public-Analysis/dozent/releases/tag/v1.0',
   keywords = ['TWITTER', 'SCRAPER', 'TWEET'],
   install_requires=[
             'pySmartDL',
             'aria2p',
             'pytest',
-            'pyfiglet'
+            'pyfiglet',
+            'numpy',
+            'humanize'
       ],
   classifiers=[
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 3 - Beta',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Build Tools',
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.9',
   ],
 )
