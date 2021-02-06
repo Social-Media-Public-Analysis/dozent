@@ -31,7 +31,8 @@ class DownloaderToolsTestCase(unittest.TestCase):
 
         DownloaderTools.download_with_pysmartdl(link='http://ipv4.download.thinkbroadband.com/20MB.zip',
                                                 download_dir='test_downloader_dir',
-                                                task_id=0
+                                                task_id=0,
+                                                number_of_dates=1
                                                 )
 
         self.assertTrue(exists('test_downloader_dir/20MB.zip'))
