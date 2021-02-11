@@ -82,9 +82,7 @@ class DownloaderTools:
         global global_download_speed
 
         download_speeds = [int(index[2]) for index in global_progress_tracker]
-        global_download_speed = int(
-            sum(download_speeds) / len(download_speeds)
-        )
+        global_download_speed = int(sum(download_speeds))
 
     @staticmethod
     def _update_global_progress_percentage() -> None:
