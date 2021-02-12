@@ -175,7 +175,7 @@ class DownloaderTools:
                     f"{humanize.naturalsize(global_final_download_size, binary=True, format=_TWO_DECIMALS)} "
                     f"@ {humanize.naturalsize(global_download_speed, binary=True)}/s {cls._create_progress_bar(size=20)} "
                     f"[ {global_progress_percentage:.2f}% ] "
-                    f"{humanize.precisedelta(global_eta)} left                                \r"
+                    f"{humanize.precisedelta(global_eta)} left    \r"
                 ).replace("i", "", 3)
 
                 sys.stdout.write(progress_bar)
