@@ -1,5 +1,5 @@
 # Specify the base image
-FROM python:3.6.12-slim-buster
+FROM python:3.9.2-slim-buster
 
 # Make sure that the working directory is app
 WORKDIR /usr/app
