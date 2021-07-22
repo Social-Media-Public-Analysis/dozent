@@ -63,17 +63,13 @@ if __name__ == "__main__":
         )
 
         if command_line_arguments["timeit"]:
-            print(
-                f"\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
-            )
+            print(f"\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
 
     elif command_line_arguments["dry_run"]:
         _dozent_object.download_test(verbose=verbose)
 
         if command_line_arguments["timeit"]:
-            print(
-                f"\n\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}"
-            )
+            print(f"\n\nDownload Time: {datetime.timedelta(seconds=(time.time() - _start_time))}")
 
     else:
         parser.print_help()
