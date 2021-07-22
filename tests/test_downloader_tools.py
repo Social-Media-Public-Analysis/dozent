@@ -4,7 +4,7 @@ from os import mkdir
 from os.path import exists
 from shutil import rmtree
 
-from dozent.downloader_tools import DownloaderTools
+from dozent.links_parser import DownloaderTools
 
 DownloadProgress = namedtuple('DownloadProgress', 'dl_size filesize speed status')
 
